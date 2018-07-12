@@ -83,6 +83,29 @@ class UsersConfig extends InstalledConfig {
 	}
 
 	/**
+	 * For a tagged permission object, set the minimum permission.
+	 * @param string $tag Tag specified for the permission item.
+	 * @param string $permission Minimum permission to set.
+	 */
+	public function setAtLeast($tag, $permission) {
+		$this->permissions[$tag] = $permission;
+	}
+
+	/**
+	 * Get the minimum permission associated with a given tag.
+	 * @param string $tag Tag specified for the permission item.
+	 * @param string $default Default to use if permission not specified.
+	 * @return string
+	 */
+	public function atLeast($tag, $default) {
+		if(isset($this->permissions[$tag])) {
+			return $this->permissions[$tag];
+		} else {
+			return $default;
+		}
+	}
+
+	/**
 	 * Set the public and private keys
 	 * @param $public
 	 * @param $private
@@ -99,6 +122,8 @@ class UsersConfig extends InstalledConfig {
 	private $user = null;   ///< Currently signed in user
 	private $auth = null;   ///< Authentication component
 
-    private static $public_key = null;
+	private $permissions = [];  ///< Permissions management
+
+	private static $public_key = null;
 	private static $private_key = null;
 }

@@ -1,0 +1,12 @@
+{
+  "name": "users-cl",
+  "version": "0.0.1",
+  "description": "CourseLib Website base Users components",
+  "main": "js/Users/Users.js",
+  "keywords": [
+    "Education",
+    "LTI"
+  ],
+  "author": "Charles B. Owen",
+  "license": "MIT"
+}

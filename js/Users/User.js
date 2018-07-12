@@ -82,8 +82,7 @@ User.STAFF = 'S';
 User.ADMIN = 'A';
 
 
-
-User.prototype.getUserRoles = function() {
+User.getUserRoles = function() {
     let roles = {};
     roles[User.GUEST] = {name: 'Guest', priority: 1};
     roles[User.USER] = {name: 'User', priority: 2};
@@ -91,6 +90,10 @@ User.prototype.getUserRoles = function() {
     roles[User.ADMIN] = {name: 'Admin', priority: 4};
 
     return roles;
+}
+
+User.prototype.getUserRoles = function() {
+    return User.getUserRoles();
 }
 
 /**
@@ -103,7 +106,7 @@ User.prototype.getRoles = function() {
         return member.getRoles();
     }
 
-    return this.getUserRoles();
+    return User.getUserRoles();
 }
 
 User.prototype.atLeast = function(atLeast) {
@@ -136,6 +139,21 @@ User.prototype.roleName = function() {
     const roles = this.getRoles();
     let role = this.role();
     return roles[role].name;
+}
+
+User.compare = function(a, b) {
+    let an = a.name.toLowerCase();
+    let bn = b.name.toLowerCase();
+
+    if(an < bn) {
+        return -1;
+    }
+
+    if(an > bn) {
+        return 1;
+    }
+
+    return a.id - b.id;
 }
 
 /**

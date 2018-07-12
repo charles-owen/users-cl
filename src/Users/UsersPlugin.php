@@ -92,14 +92,27 @@ class UsersPlugin extends \CL\Site\Components\Plugin {
 	 * @return null|string redirect page.
 	 */
 	private function postStartup(Site $site, Server $server, $time) {
+		// Accese UsersConfig
+		$users = $site->users;
+
 		//
 		// Allow an at-least role to be specified for a page.
 		// If user does not meet that requirement, they are
 		// redirected to a not authorized page
 		//
+		// at-least can be:
+		//   'at-least' => User::STAFF
+		//   'at-least' => ['configurable-permission-tag', default permission]
+		//
 		if(isset($site->options['at-least'])) {
-			if($site->users->user === null ||
-				!$site->users->user->atLeast($site->options['at-least'])) {
+			$option = $site->options['at-least'];
+			if(is_array($option)) {
+				$atLeast = $users->atLeast($option[0], $option[1]);
+			} else {
+				$atLeast = $option;
+			}
+
+			if($site->users->user === null || !$site->users->user->atLeast($atLeast)) {
 				if(isset($site->options['resource'])) {
 					$message = urlencode($site->options['resource']);
 				} else {

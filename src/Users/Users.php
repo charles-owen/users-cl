@@ -21,7 +21,10 @@ class Users extends \CL\Tables\Table {
 		parent::__construct($config, 'user');
 	}
 	
-	/** Function to create an SQL create table command for the users table */
+	/**
+	 * Create an SQL create table command for the users table
+	 * @return string SQL
+	 */
 	public function createSQL() {
 		
 		$query = <<<SQL
@@ -60,6 +63,35 @@ SQL;
 			$where->append('email=?', $params['email']);
 		}
 
+		if(isset($params['search'])) {
+			$any = false;
+			$split = preg_split('/[\s,\.]/', $params['search']);
+
+			if(count($split) === 1) {
+				$split0 = $split[0];
+
+				$where->nest();
+				$where->append('user like ?', "%$split0%", \PDO::PARAM_STR, 'or');
+				$where->append('name like ?', "%$split0%", \PDO::PARAM_STR, 'or');
+				$where->unnest();
+
+				$any = true;
+			} else {
+				// Multiple substring can match names only
+				foreach($split as $like) {
+					if(strlen($like) > 0) {
+						$any = true;
+						$where->append('name like ?', "%$like%");
+					}
+				}
+			}
+
+
+			if(!$any) {
+				return [];
+			}
+		}
+
 		$sql = <<<SQL
 select * from $this->tablename
 $where->where
@@ -69,6 +101,11 @@ SQL;
 		if(isset($params['limit'])) {
 			$sql .= "\nlimit ?";
 			$where->append(null, intval($params['limit']), \PDO::PARAM_INT);
+		}
+
+		if(isset($params['offset'])) {
+			$sql .= "\noffset ?";
+			$where->append(null, intval($params['offset']), \PDO::PARAM_INT);
 		}
 
 		//echo $where->sub_sql($sql);

@@ -2,6 +2,7 @@
 
 namespace CL\Users\Api;
 
+use CL\Site\Components\Plugin;
 use CL\Site\Site;
 use CL\Site\System\Server;
 use CL\Site\Api\JsonAPI;
@@ -29,20 +30,11 @@ class ApiUsers extends \CL\Users\Api\ApiResource {
 
 	public function dispatch(Site $site, Server $server, array $params, $time) {
 
-		if(count($params) === 0) {
+		if(count($params) < 1) {
 			return $this->query($site, $server);
 		}
 
 		switch($params[0]) {
-			case 'login':
-				return $this->login($site, $server, $time);
-
-			case 'logout':
-				return $this->logout($site, $server, $time);
-
-			case 'user':
-				return $this->user($site, $server, $params);
-
 			case 'new':
 				return $this->newOrUpdate($site, $server, false, $params, $time);
 
@@ -51,6 +43,12 @@ class ApiUsers extends \CL\Users\Api\ApiResource {
 
 			case 'delete':
 				return $this->delete($site, $server);
+
+			case 'login':
+				return $this->login($site, $server, $time);
+
+			case 'logout':
+				return $this->logout($site, $server, $time);
 
 			case 'tables':
 				return $this->tables($site, $server, new UserTables($site->db));
@@ -133,6 +131,11 @@ class ApiUsers extends \CL\Users\Api\ApiResource {
 
 		$params['limit'] = $limit + 1;
 
+
+		if(!empty($get['offset'])) {
+			$params['offset'] = $get['offset'];
+		}
+
 		if(!empty($get['userId'])) {
 			$params['userId'] = $get['userId'];
 		}
@@ -140,6 +143,10 @@ class ApiUsers extends \CL\Users\Api\ApiResource {
 
 		if(!empty($get['email'])) {
 			$params['email'] = $get['email'];
+		}
+
+		if(!empty($get['search'])) {
+			$params['search'] = $get['search'];
 		}
 
 		$users = new Users($site->db);
@@ -164,18 +171,6 @@ class ApiUsers extends \CL\Users\Api\ApiResource {
 		return $json;
 	}
 
-	/**
-	 * Get a single user, either the current user or a selected user
-	 * @param Site $site
-	 * @param Server $server
-	 * @param $params
-	 */
-	private function user(Site $site, Server $server, $params) {
-		$user = $site->users->user;
-		if($user === null) {
-
-		}
-	}
 
 	/**
 	 * Add a new user or update an existing user
@@ -248,7 +243,7 @@ class ApiUsers extends \CL\Users\Api\ApiResource {
 		}
 
 		$json = new JsonAPI();
-		$json->addData('new-user', $newUser->id, $newUser->data());
+		$json->addData($update ? 'updated-user' : 'new-user', $newUser->id, $newUser->data());
 		return $json;
 	}
 

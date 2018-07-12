@@ -40,7 +40,7 @@ class ApiResource {
 	}
 
 	protected function atLeast(User $user, $role) {
-		if($user === null || !$user->atLeast(User::ADMIN)) {
+		if($user === null || !$user->atLeast($role)) {
 			throw new APIException("Not authorized", APIException::NOT_AUTHORIZED);
 		}
 	}
@@ -78,4 +78,7 @@ class ApiResource {
 		return new JsonAPI();
 	}
 
+	protected static function sanitize($value) {
+		return trim(strip_tags($value));
+	}
 }
