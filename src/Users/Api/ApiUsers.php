@@ -15,7 +15,7 @@ use CL\Users\Users;
 /**
  * API Resource for /api/users
  */
-class ApiUsers extends \CL\Users\Api\ApiResource {
+class ApiUsers extends \CL\Users\Api\Resource {
 	const QUERY_LIMIT = 500;
 
 	// Must match values in Users.js
@@ -28,8 +28,7 @@ class ApiUsers extends \CL\Users\Api\ApiResource {
 		parent::__construct();
 	}
 
-	public function dispatch(Site $site, Server $server, array $params, $time) {
-
+	protected function dispatch(Site $site, Server $server, array $params, array $properties, $time) {
 		if(count($params) < 1) {
 			return $this->query($site, $server);
 		}

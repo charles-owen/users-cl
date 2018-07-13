@@ -19,9 +19,10 @@ use CL\Site\Api\APIException;
  * This is a base class for API resources. The reason it is in Users is it
  * is mainly used for tasks that require a valid user or admin.
  */
-class ApiResource {
+abstract class Resource extends \CL\Site\Api\Resource {
 
 	public function __construct() {
+		parent::__construct();
 	}
 
 	/**
@@ -78,7 +79,4 @@ class ApiResource {
 		return new JsonAPI();
 	}
 
-	protected static function sanitize($value) {
-		return trim(strip_tags($value));
-	}
 }

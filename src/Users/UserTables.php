@@ -1,5 +1,6 @@
 <?php
 /**
+ * @file
  * Table maker for User tables
  */
 
@@ -7,10 +8,12 @@ namespace CL\Users;
 
 use CL\Tables\Config;
 
+/**
+ * Table maker for User subsystem tables
+ */
 class UserTables extends \CL\Tables\TableMaker {
-
 	/**
-	 * UserTable constructor.
+	 * UserTables constructor.
 	 * @param Config $config
 	 */
 	public function __construct(Config $config) {

@@ -34,7 +34,7 @@
           </tr>
         </table>
         <p v-if="users.length == 0" class="centerbox comp center">
-          There are no user currently added in the system.</p>
+          There are currently no users in the system.</p>
       </div>
 
       <fetcher :fetcher="fetcher"></fetcher>

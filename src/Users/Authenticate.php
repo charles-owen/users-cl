@@ -63,7 +63,7 @@ class Authenticate {
 		$cookiename = $site->cookiePrefix . User::COOKIENAME;
 		if(!empty($server->cookie[$cookiename])) {
 			try {
-				$decoded = JWT::decode($server->cookie[$cookiename], $site->users->public_key, ["RS256"]);
+				$decoded = JWT::decode($server->cookie[$cookiename], $site->users->publicKey, ["RS256"]);
 			} catch(\Exception $exception) {
 				/// JWT was not valid...
 				$decoded = null;
@@ -83,10 +83,12 @@ class Authenticate {
 					// during site startup.
 					$u = $site->users->getUser($decoded->data->user);
 					if($u !== null) {
-						return new User(['id'=>0,
+						$user = new User(['id'=>0,
 							'user'=>$u['user'],
 							'name'=>$u['name'],
 							'role'=>$u['role']]);
+						$user->setFromJWT($decoded);
+						return $user;
 					}
 				}
 			}
@@ -134,7 +136,7 @@ class Authenticate {
 	 * @return string Location to redirect to if authentication fails
 	 */
 	public function noauth(Site $site) {
-		return 'cl/site/notauthorized.php';
+		return 'cl/notauthorized';
 	}
 
 	/**

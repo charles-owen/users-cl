@@ -26,9 +26,14 @@ class UsersPlugin extends \CL\Site\Components\Plugin {
 			return $this->postStartup($site, $server, $time);
 		});
 
-		$site->addApi('users', function(Site $site, Server $server, array $params, $time) {
+		$site->addRoute(['login'], function(Site $site, Server $server, array $params, array $properties, $time) {
+			$view = new LoginView($site);
+			return $view->vue('login');
+		});
+
+		$site->addRoute(['api', 'users', '*'], function(Site $site, Server $server, array $params, array $properties, $time) {
 			$resource = new ApiUsers();
-			return $resource->dispatch($site, $server, $params, $time);
+			return $resource->apiDispatch($site, $server, $params, $properties, $time);
 		});
 	}
 
@@ -114,12 +119,12 @@ class UsersPlugin extends \CL\Site\Components\Plugin {
 
 			if($site->users->user === null || !$site->users->user->atLeast($atLeast)) {
 				if(isset($site->options['resource'])) {
-					$message = urlencode($site->options['resource']);
+					$message = $site->options['resource'];
 				} else {
 					$message = 'selected page';
 				}
 
-				return $site->root . '/cl/site/notauthorized.php?r=' . $message;
+				return $site->root . '/cl/notauthorized/' . urlencode($message);
 			}
 		}
 

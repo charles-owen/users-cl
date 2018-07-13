@@ -256,7 +256,7 @@ class User {
 			"data" => $this->dataJWT
 		];
 
-		return JWT::encode($token, $site->users->private_key, 'RS256');
+		return JWT::encode($token, $site->users->privateKey, 'RS256');
 	}
 
 	/**
