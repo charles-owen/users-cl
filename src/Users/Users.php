@@ -168,48 +168,46 @@ SQL;
 		}
 	}
 
+	/**
+	 * Get a user
+	 * @param string $user The user id
+	 * @returns User object or null if it does not exist
+	 */
+	public function getByUser($user) {
+		$sql = <<<SQL
+select * from $this->tablename where user=?
+SQL;
+
+		$pdo = $this->pdo;
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->execute([$user]);
+			$row = $stmt->fetch(\PDO::FETCH_ASSOC);
+			if($row) {
+				return new User($row);
+			} else {
+				return null;
+			}
+		} catch(\PDOException $e) {
+			return null;
+		}
+	}
 	
-//	/**
-//	 * Get a user by the system user id
-//	 * @param $userid The user id (system ID)
-//	 * @returns User object or null if it does not exist */
-//	public function get_user_by_userid($userid) {
-//        $pdo = $this->pdo();
-//		$qid = $pdo->quote($userid);
-//		$sql = "select * from $this->tablename where user=$qid";
-//		$rows = $pdo->query($sql);
-//
-//        // Check if the query was successful at all
-//        if(!$rows) {
-//            return null;
-//        }
-//
-//        // Now fetch the rows
-//		$row = $rows->fetch();
-//		if($row) {
-//			return new User($this->course, $row);
-//		} else {
-//			return null;
-//		}
-//	}
-//
-//    /** Create a guest user
-//     * @param $userId The User ID to use for this guest user
-//     * @returns User object that is a guest */
-//    public function create_guest_user($userId) {
-//        $rows['id'] = 0;
-//        $rows['user'] = $userId;
-//        $rows['email'] = $userId . '@msu.edu';
-//        $rows['name'] = 'Guest';
-//        $rows['semester'] = $this->course->get_semester();
-//        if($this->course->is_admin($userId)) {
-//            $rows['role'] = User::ADMIN;
-//        } else {
-//            $rows['role'] = User::GUEST;
-//        }
-//
-//        return new User($this->course, $rows);
-//    }
+
+    /** Create a guest user
+     * @param $userId The User ID to use for this guest user
+     * @returns User object that is a guest */
+    public function createGuestUser($userId) {
+    	$row = [
+    		'id' => 0,
+		    'user'=>$userId,
+		    'email'=>null,
+		    'name'=>'Guest',
+		    'role'=>User::GUEST
+	    ];
+
+        return new User($row);
+    }
 
 
 

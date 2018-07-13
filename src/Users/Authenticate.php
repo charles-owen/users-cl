@@ -146,8 +146,10 @@ class Authenticate {
 	 * Override in derived classes that use alternative login systems.
 	 *
 	 * @param Site $site
-	 * @param $post
-	 * @return \User object if successful or NULL otherwise
+	 * @param Server $server
+	 * @return User object if successful or NULL otherwise
+	 * @throws APIException
+	 * @internal param $post
 	 */
 	public function login(Site $site, Server $server) {
 		$post = $server->post;
@@ -161,7 +163,6 @@ class Authenticate {
 		}
 
 		$password = $post['password'];
-
 		$users = new Users($site->db);
 
 		// The bypass feature allows skipping passwords
@@ -233,5 +234,5 @@ class Authenticate {
 		return $username;
 	}
 
-	private $options;
+	protected $options;
 }

@@ -1,61 +1,73 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: cbowen
- * Date: 5/3/2016
- * Time: 11:14 PM
+ * @file
+ *
  */
 
-namespace Auth;
+namespace CL\Users;
 
+use \CL\Site\Site;
+use \CL\Site\System\Server;
+use \CL\Site\Api\APIException;
 
 class AuthenticateLDAP extends Authenticate {
+	/**
+	 * Authenticate constructor.
+	 * @param array $options That can contain options we can add.
+	 * Possible options:
+	 *
+	 * 'sandbox-bypass'=>true will bypass passwords if
+	 * we are in the sandbox.
+	 *
+	 * 'email-strip'=>true will strip @anything from the
+	 * entered address, reducing to just the user ID.
+	 */
+	public function __construct($options = [], $url, $basedn) {
+		parent::__construct($options);
 
-	public function __construct($url, $basedn) {
 		$this->url = $url;
 		$this->basedn = $basedn;
 	}
 
-	/**
-	 * Get a location to redirect to if authentication fails.
-	 *
-	 * This can be a page on this or any other site.
-	 *
-	 * @param \Course $course Course object
-	 * @return string Location to redirect to if authentication fails
-	 */
-	public function noauth(\Course $course) {
-		$libroot = $course->get_libroot();
-		return $libroot . '/login.php';
-	}
+
 
 	/**
-	 * Attempt to log a user in
-	 * @param \Course $course
-	 * @param $post
-	 * @return \User object if successful or NULL otherwise
+	 * Attempt to log a user in.
+	 *
+	 * This version uses LDAP to attempt to log in.
+	 *
+	 * @param Site $site
+	 * @param Server $server
+	 * @return User object if successful or NULL otherwise
+	 * @throws APIException
+	 * @internal param $post
 	 */
-	public function login(\Course $course, $post) {
-		if(!isset($post['userid']) || !isset($post['password'])) {
-			return $this->fail("Invalid usage");
+	public function login(Site $site, Server $server) {
+		$post = $server->post;
+		if(!isset($post['id']) || !isset($post['password'])) {
+			throw new APIException('Invalid API usage');
 		}
 
 		$username = $this->getUserId($post);
 		$password = $post['password'];
 
-		// If we are in the sandbox, we accept any user without
-		// checking the password.
-		if(!$course->get_sandbox()) {
+		// The bypass feature allows skipping passwords
+		// when running in the sandbox only.
+		$bypass = $site->sandbox &&
+			!empty($this->options['sandbox-bypass']) &&
+			$this->options['sandbox-bypass'];
+
+		if(!$bypass) {
 			// Connect to the LDAP server
 			$ldap = @\ldap_connect($this->url);
 			if(!$ldap) {
-				return $this->fail("Invalid authentication server configuration");
+				throw new APIException("Invalid authentication server configuration");
 			}
 
 			// Security check for null in name or password, which can be
 			// a potential security hole.
 			if ($username === null or preg_match('/\x00/',$password)) {
-				return $this->fail("Unable to login: Invalid authentication credentials");
+				throw new APIException("Unable to login: Invalid authentication credentials");
 			}
 
 			$ldaprdn = "uid=$username,$this->basedn";
@@ -69,23 +81,21 @@ class AuthenticateLDAP extends Authenticate {
 			if(!$bind) {
 				// If the LDAP method fails, try the build-in
 				// password system instead.
-				return parent::login($course, $post);
+				return parent::login($site, $server);
 			}
 		}
 
 		/*
 	 	* User Management, allows guest users
 	 	*/
-		$users = new \Users($course);
-		$user = $users->get_user_by_userid($username);
+		$users = new Users($site->db);
+		$user = $users->getByUser($username);
 		if($user === null) {
-			$user = $users->create_guest_user($username);
+			$user = $users->createGuestUser($username);
 		}
 
 		return $user;
 	}
-
-
 
 	private $url;
 	private $basedn;
