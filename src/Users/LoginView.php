@@ -12,7 +12,7 @@ use CL\Site\Site;
 class LoginView extends \CL\Site\View {
 
 	public function __construct(Site $site) {
-		parent::__construct($site, ['open']);
+		parent::__construct($site, ['open'=>true]);
 
 		//
 		// Allow for login page customization
@@ -21,12 +21,10 @@ class LoginView extends \CL\Site\View {
 
 		$this->title = "Login";
 		$this->addJS('login');
-
-		$json = json_encode(['before'=>$this->before, 'after'=>$this->after]);
+		$this->addJSON('cl-login', json_encode(['before'=>$this->before, 'after'=>$this->after]));
 
 		$this->script = <<<SCRIPT
-Login.siteName = '$site->siteName';
-Login.start($json);
+Login.start();
 SCRIPT;
 	}
 

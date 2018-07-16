@@ -43,14 +43,14 @@ UsersFactory.create = function(store) {
     }
 
     //
-    // Register a property 'user' that can be used
-    // to set the user.
+    // Detect the passed in user information
+    // and add it to the store.
     //
-    Object.defineProperty(Users, 'user', {
-        set(value) {
-            store.commit('user/set', value);
-        }
-    });
+
+    let en;
+    if( (en = document.getElementById('cl-user')) !== null) {
+        store.commit('user/set', JSON.parse(en.textContent));
+    }
 
     return Users;
 }

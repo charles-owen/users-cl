@@ -1,17 +1,20 @@
 <?php
-/** @file User.php
+/**
+ * @file User.php
  * Class that defines a user
  */
 
 namespace CL\Users;
 
+use \CL\Site\MetaData;
+use \CL\Site\MetaDataOwner;
 use \Firebase\JWT\JWT;
 use \CL\Site\Site;
 
 /**
  * Class that defines a site user
  */
-class User {
+class User implements MetaDataOwner {
 	const COOKIENAME = "-fg3bsck8m9";
 
 	/// Duration after which JWT token expires
@@ -38,6 +41,10 @@ class User {
 				$this->name = $this->getOrDefault($row, 'user_name', '');
 				$this->role = $this->getOrDefault($row, 'user_role', User::GUEST);
 
+				if(isset($row['user_metadata'])) {
+					$this->metaData = new MetaData($this, $row['user_metadata']);
+				}
+
 				$this->hasPassword = isset($row['user_password']) &&
 					$row['user_password'] !== null &&
 					strlen($row['user_password']) >= 16;
@@ -51,11 +58,14 @@ class User {
 				$this->name = $this->getOrDefault($row, 'name', '');
 				$this->role = $this->getOrDefault($row, 'role', User::GUEST);
 
+				if(isset($row['metadata'])) {
+					$this->metaData = new MetaData($this, $row['metadata']);
+				}
+
 				$this->hasPassword = isset($row['password']) &&
 					$row['password'] !== null &&
 					strlen($row['password']) >= 16;
 			}
-
 		}
 	}
 
@@ -78,19 +88,50 @@ class User {
 	/**
 	 * Get standard properties for a user.
 	 *
-	 * @param string $name Options are:
+	 * <b>Properties</b>
+	 * Property | Type | Description
+	 * -------- | ---- | -----------
+	 * dataJWT | array | Data from the Json Web Token
+	 * displayName | string | Name in the form First Last
+	 * email | string | Email address
+	 * hasPassword | boolean | true if this user has a password set in the database
+	 * id | int | Internal user ID
+	 * member | Membership | Any active membership for this user
+	 * metaData | MetaData | Meta-data for this user
+	 * name | string | User name (Last, First)
+	 * role | string | User role (see above roles)
+	 * userId | string | External (world) user ID
+	 *
+	 *
+	 * @param string $key Property name
 	 * @return Course|mixed|null|string Property value
 	 */
 	public function __get($key) {
 		switch($key) {
-			case 'id':
-				return $this->id;
+			case 'dataJWT':
+				return $this->dataJWT;
 
-			case 'userId':
-				return $this->userId;
+			case 'displayName':
+				return $this->getDisplayName();
 
 			case 'email':
 				return $this->email;
+
+			case 'hasPassword':
+				return $this->hasPassword;
+
+			case 'id':
+				return $this->id;
+
+			case 'member':
+				return $this->member;
+
+			case 'metaData':
+				if($this->metaData === null) {
+					$this->metaData = new MetaData($this);
+				}
+
+				return $this->metaData;
 
 			case 'name':
 				return $this->name;
@@ -102,17 +143,8 @@ class User {
 
 				return $this->role;
 
-            case 'displayName':
-                return $this->getDisplayName();
-
-			case 'hasPassword':
-				return $this->hasPassword;
-
-			case 'member':
-				return $this->member;
-
-			case 'dataJWT':
-				return $this->dataJWT;
+			case 'userId':
+				return $this->userId;
 
             default:
                 $trace = debug_backtrace();
@@ -125,6 +157,12 @@ class User {
         }
     }
 
+	/**
+	 * Get the effective user role. This will be the membership role if
+	 * the user has a membership attached.
+	 *
+	 * @return string Role
+	 */
     public function role() {
 	    if($this->member !== null) {
 		    return $this->member->role;
@@ -135,34 +173,45 @@ class User {
 
     /**
      * Property set magic method
+     *
+     * <b>Properties</b>
+     * Property | Type | Description
+     * -------- | ---- | -----------
+     * email | string | Email address
+     * id | int | Internal user ID
+     * member | Membership | Set an active membership for this user
+     * name | string | User name (Last, First)
+     * role | string | User role (see constants above)
+     * userId | string | External (world) user ID
+     *
      * @param $key Property name
      * @param $value Value to set
      */
     public function __set($key, $value) {
         switch($key) {
+	        case 'email':
+		        $this->email = $value;
+		        break;
+
 	        case 'id':
 	        	$this->id = $value;
 	        	break;
 
-	        case 'userId':
-	        	$this->userId = $value;
-	        	break;
-
-	        case 'email':
-	        	$this->email = $value;
-	        	break;
+	        case 'member':
+		        $this->member = $value;
+		        $this->member->user = $this;
+		        break;
 
 	        case 'name':
-	        	$this->name = $value;
-	        	break;
+		        $this->name = $value;
+		        break;
 
 	        case 'role':
-	        	$this->role = $value;
-	        	break;
+		        $this->role = $value;
+		        break;
 
-	        case 'member':
-	        	$this->member = $value;
-	        	$this->member->user = $this;
+	        case 'userId':
+	        	$this->userId = $value;
 	        	break;
 
             default:
@@ -235,6 +284,7 @@ class User {
 
 	/**
 	 * Create a JSON Web Token for this user
+	 * @param Site $site The Site object
 	 * @param null $time Time to create or null for current time
 	 * @return string JWT
 	 */
@@ -260,6 +310,15 @@ class User {
 	}
 
 	/**
+	 * Write the meta-data for this user.
+	 * @param Site $site Site object so we can access tables.
+	 */
+	public function writeMetaData(Site $site) {
+		$users = new Users($site->db);
+		$users->writeMetaData($this);
+	}
+
+	/**
 	 * Set the JWT payload data.
 	 * @param object $decoded Data from the JWT
 	 */
@@ -269,6 +328,10 @@ class User {
 
 	public function setJWT($key, $value) {
 		$this->dataJWT[$key] = $value;
+	}
+
+	public function unsetJWT($key) {
+		unset($this->dataJWT[$key]);
 	}
 
 	/**
@@ -327,7 +390,8 @@ class User {
 	private $name = '';		    ///< User name, default is empty
 	private $role = User::GUEST;		// Role value, see constants above
 	private $hasPassword = false;	///< User has a password set
-	private $dataJWT = [];      /// Data included in authenication JWT
+	private $dataJWT = [];      ///< Data included in authenication JWT
+	private $metaData = null;   ///< Attached meta-data
 
 	private $member = null;     // Any membership for this user
 }

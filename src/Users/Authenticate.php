@@ -185,7 +185,7 @@ class Authenticate {
 				// We found a user
 				if(!$bypass) {
 					// Validate the password
-					if(!password_verify($password, $u['password'])) {
+					if($u['password'] === null || !password_verify($password, $u['password'])) {
 						throw new APIException('Unable to login:<br>Invalid authentication credentials');
 					}
 				}

@@ -6,7 +6,7 @@ let Login = function() {
 
 }
 
-Login.start = function(info, site) {
+Login.start = function(site) {
 
     if(site === undefined) {
         site = Site;
@@ -19,8 +19,12 @@ Login.start = function(info, site) {
     const Header = Site.header.component();
     const Footer = Site.footer.component();
 
-    let before = info.before !== undefined ? info.before : '';
-    let after = info.after !== undefined ? info.after : '';
+    let before, after, en;
+    if( (en = document.getElementById('cl-login')) !== null) {
+        let info = JSON.parse(en.textContent);
+        before = info.before !== undefined ? info.before : '';
+        after = info.after !== undefined ? info.after : '';
+    }
 
     new Vue({
         el: '#login',

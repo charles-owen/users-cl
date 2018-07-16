@@ -1,6 +1,13 @@
+<!--
+/**
+ * @file
+ * Simple component for selecting a user in the system.
+ */
+-->
 <template>
   <span>
     <div class="cl-input"><input v-model="query" type="text" maxlength="150">
+      <a @click.prevent="fetch(query)" class="searcher"><img :src="searcher"></a>
       <div v-if="result.length > 0 || noresult" class="cl-results">
         <div class="cl-result-list">
           <div v-for="user in result" @click.prevent="selectUser(user)"><span><a
@@ -12,8 +19,7 @@
         <div v-if="more" class="statement">...more...</div>
 
       </div>
-    </div>
-    <a @click.prevent="clear"><img :src="deleter"></a>
+    </div> <a @click.prevent="clear"><img :src="deleter"></a>
   </span>
 </template>
 
@@ -35,6 +41,7 @@
                 timer: null,
                 set: false,
                 more: false,
+                searcher: Site.root + 'vendor/cl/site/img/search.png',
                 deleter: Site.root + 'vendor/cl/site/img/x.png',
             }
         },
@@ -57,6 +64,13 @@
         },
         methods: {
             fetch(query) {
+                console.log('fetch');
+                console.log(query);
+                if(this.timer !== null) {
+                    clearTimeout(this.timer);
+                    this.timer = null;
+                };
+
                 this.selected(null);
 
                 query = query.trim();
@@ -126,13 +140,32 @@
 
 <style lang="scss" scoped>
 
+  a.searcher {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    min-height: 100%;
+    width: 21px;
+    text-align: center;
+    background: #aaaaaa;
+
+    img {
+      height: 16px;
+      width: 16px;
+      vertical-align: -4px;
+    }
+  }
+
   div.cl-input {
     display: inline-block;
     position: relative;
     width: 300px;
 
+
     input {
       width: 100%;
+      border: 1px solid #cccccc;
     }
 
     div.cl-results {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Plugin for add users support to Site.
+ * Plugin for add the Users subsystem. Add users support to Site.
  */
 
 namespace CL\Users;
@@ -10,7 +10,15 @@ use CL\Site\Site;
 use CL\Site\System\Server;
 use CL\Users\Api\ApiUsers;
 
+/**
+ * Plugin for add the Users subsystem. Add users support to Site.
+ */
 class UsersPlugin extends \CL\Site\Components\Plugin {
+
+	/**
+	 * Install the plugin!
+	 * @param Site $site The Site object
+	 */
 	public function install(Site $site) {
 		$site->install("users", new UsersConfig());
 
@@ -42,16 +50,16 @@ class UsersPlugin extends \CL\Site\Components\Plugin {
 	 *
 	 * Ensure the tables exist
 	 *
-	 * @param Site $config
+	 * @param Site $site
 	 * @param Server $server
 	 * @param int $time Current time
 	 * @return null|string redirect page.
 	 */
-	private function preStartup(Site $config, Server $server, $time) {
+	private function preStartup(Site $site, Server $server, $time) {
 		// Ensure tables exist...
-		$users = new Users($config->db);
+		$users = new Users($site->db);
 		if(!$users->exists()) {
-			$maker = new UserTables($config->db);
+			$maker = new UserTables($site->db);
 			$maker->create(false);
 		}
 
@@ -82,7 +90,7 @@ class UsersPlugin extends \CL\Site\Components\Plugin {
 		}
 
 		// If this is an open page, we allow no active user
-		if(in_array('open', $site->options)) {
+		if(isset($site->options['open']) && $site->options['open']) {
 			return null;
 		}
 

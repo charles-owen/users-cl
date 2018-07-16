@@ -1,8 +1,11 @@
 <?php
+/**
+ * @file
+ * API Resource for /api/users
+ */
 
 namespace CL\Users\Api;
 
-use CL\Site\Components\Plugin;
 use CL\Site\Site;
 use CL\Site\System\Server;
 use CL\Site\Api\JsonAPI;
@@ -16,18 +19,35 @@ use CL\Users\Users;
  * API Resource for /api/users
  */
 class ApiUsers extends \CL\Users\Api\Resource {
+	/// Limit on query requests
 	const QUERY_LIMIT = 500;
 
+	//
 	// Must match values in Users.js
+	/// \cond
 	const MUST_PROVIDE_USERID_OR_EMAIL = 101;
 	const PASSWORDS_MUST_MATCH = 102;
 	const DUPLICATE_USER = 103;
 	const DUPLICATE_EMAIL = 104;
+	/// \endcond
 
+	/**
+	 * ApiUsers constructor.
+	 */
 	public function __construct() {
 		parent::__construct();
 	}
 
+	/**
+	 * Concrete API resources dispatcher.
+	 * @param Site $site The Site object
+	 * @param Server $server The Server object
+	 * @param array $params The path beyond the page that invoked this call
+	 * @param array $properties Properties determined from the page options like :id
+	 * @param int $time The current time
+	 * @return mixed Result of the API operation.
+	 * @throws APIException
+	 */
 	protected function dispatch(Site $site, Server $server, array $params, array $properties, $time) {
 		if(count($params) < 1) {
 			return $this->query($site, $server);

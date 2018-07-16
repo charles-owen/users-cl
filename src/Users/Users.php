@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `$this->tablename` (
   email    varchar(254) UNIQUE, 
   name     varchar(150) NOT NULL, 
   role     char(1) NOT NULL, 
-  extra    mediumtext, 
+  metadata mediumtext, 
   password varchar(255), 
   created  datetime NOT NULL, 
   PRIMARY KEY (id), 
@@ -121,7 +121,7 @@ SQL;
 	
 	
 	/** Get a user
-	 * @param $id The user id (internal table id)
+	 * @param int $id The user id (internal table id)
 	 * @returns User object or null if it does not exist */
 	public function get($id) {
 		$sql = <<<SQL
@@ -210,14 +210,14 @@ SQL;
     }
 
 
-
 	/**
 	 * Add a new user to the database
 	 * @param User $user User to add
-     * @returns array with keys:
+	 * @param int $time The current time
+	 * @return array with keys:
 	 *     ok: true if successfully inserted
-	 *     id: The id if successfully added to database
-	 *     duplicate: Field that violated unique constraint
+	 * id: The id if successfully added to database
+	 * duplicate: Field that violated unique constraint
 	 * ID for the new user or null if failed
 	 */
 	public function add(User $user, $time) {
@@ -327,9 +327,9 @@ SQL;
 
 	/**
 	 * Validate a user
-	 * @param $id The user ID or the email address
-	 * @param $password Password to test
-	 * @return \User object if successful or NULL if not
+	 * @param string $id The user ID or the email address
+	 * @param string $password Password to test
+	 * @return User object if successful or NULL if not
 	 */
 	public function validatePassword($id, $password) {
 		$pdo = $this->pdo();
@@ -353,6 +353,22 @@ SQL;
 		}
 
 		return null;
+	}
+
+	/**
+	 * Write the user meta-data to the table.
+	 * @param User $user The user to write the metadata for
+	 */
+	public function writeMetaData(User $user) {
+		$pdo = $this->pdo();
+
+		$sql = <<<SQL
+update $this->tablename SET metadata=?
+where id=?
+SQL;
+
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute([$user->metaData->json(), $user->id]);
 	}
 
 	/**

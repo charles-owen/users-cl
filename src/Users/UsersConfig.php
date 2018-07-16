@@ -83,7 +83,7 @@ class UsersConfig extends InstalledConfig {
 	 * @param $role User role
 	 * @param $password Hashed password created by password_hash($password, PASSWORD_DEFAULT)
 	 */
-	public function addUser($userid, $name, $role, $password) {
+	public function addUser($userid, $name, $role, $password=null) {
 		$this->users[$userid] = ['user'=>$userid, 'name'=>$name, 'role'=>$role, 'password'=>$password];
 	}
 
