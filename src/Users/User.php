@@ -256,8 +256,8 @@ class User implements MetaDataOwner {
 	 * This reverses the lastname, firstname to firstname lastname
 	 */
 	public function getDisplayName() {
-		if($this->get_role() != User::GUEST) {
-			return self::toDisplayName($this->get_name());
+		if($this->__get('role') != User::GUEST) {
+			return self::toDisplayName($this->name);
 		} else {
 			return "Guest";
 		}
