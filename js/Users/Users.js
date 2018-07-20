@@ -12,7 +12,7 @@ export {StoreModuleUsers};
 // Use the factory to create the Users object
 let Users = global.Users !== undefined ?
     Users :
-    UsersFactory.create(Site.store);
+    UsersFactory.create(Site);
 
 export {Users};
 export default Users;

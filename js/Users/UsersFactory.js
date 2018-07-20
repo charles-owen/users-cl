@@ -6,6 +6,7 @@
 import {User} from './User.js';
 import {StoreModuleUser} from './StoreModuleUser.js';
 import {StoreModuleUsers} from './StoreModuleUsers.js';
+import {Ready} from 'site-cl';
 
 let UsersFactory = function() {}
 
@@ -16,7 +17,7 @@ let UsersFactory = function() {}
  * @param store Vuex store object
  * @returns {Users} object.
  */
-UsersFactory.create = function(store) {
+UsersFactory.create = function(site) {
 
     let Users = function() {
     }
@@ -34,6 +35,8 @@ UsersFactory.create = function(store) {
     //
     // Install the users store modules
     //
+    let store = site.store;
+
     if(store !== undefined) {
         store.registerModule('user', StoreModuleUser);
         store.registerModule('users', StoreModuleUsers.create(
@@ -42,15 +45,16 @@ UsersFactory.create = function(store) {
         ));
     }
 
-    //
-    // Detect the passed in user information
-    // and add it to the store.
-    //
-
-    let en;
-    if( (en = document.getElementById('cl-user')) !== null) {
-        store.commit('user/set', JSON.parse(en.textContent));
-    }
+    site.ready(() => {
+        //
+        // Detect the passed in user information
+        // and add it to the store.
+        //
+        let en;
+        if( (en = document.getElementById('cl-user')) !== null) {
+            store.commit('user/set', JSON.parse(en.textContent));
+        }
+    });
 
     return Users;
 }

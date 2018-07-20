@@ -16,6 +16,18 @@ use CL\Users\Api\ApiUsers;
 class UsersPlugin extends \CL\Site\Components\Plugin {
 
 	/**
+	 * A tag that represents this plugin
+	 * @return string A tag like 'course', 'users', etc.
+	 */
+	public function tag() {return 'users';}
+
+	/**
+	 * Return an array of tags indicating what plugins this one is dependent on.
+	 * @return array of tags this plugin is dependent on
+	 */
+	public function depends() {return [];}
+
+	/**
 	 * Install the plugin!
 	 * @param Site $site The Site object
 	 */
@@ -28,7 +40,7 @@ class UsersPlugin extends \CL\Site\Components\Plugin {
 
 		$site->addStartup(function(Site $site, Server $server, $time) {
 			return $this->startup($site, $server, $time);
-		}, 100);
+		});
 
 		$site->addPostStartup(function(Site $site, Server $server, $time) {
 			return $this->postStartup($site, $server, $time);

@@ -146,6 +146,9 @@ class User implements MetaDataOwner {
 			case 'userId':
 				return $this->userId;
 
+			case 'guest':
+				return $this->role() === User::GUEST;
+
             default:
                 $trace = debug_backtrace();
                 trigger_error(
