@@ -368,7 +368,7 @@ class User implements MetaDataOwner {
 			return false;
 		}
 
-		return ($roles[$this->role]['priority'] >= $roles[$atLeast]['priority']);
+		return ($roles[$this->role()]['priority'] >= $roles[$atLeast]['priority']);
 	}
 
 	public function data($private = false) {
