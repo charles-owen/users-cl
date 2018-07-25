@@ -30,13 +30,18 @@ abstract class Resource extends \CL\Site\Api\Resource {
 	/**
 	 * Ensure a user is actually logged in.
 	 * @param Site $site The Site object containing the user
+	 * @param string $atLeast If specified the user must have some minimum role.
 	 * @throws APIException If no logged in user
 	 * @return User object
 	 */
-	protected function isUser(Site $site) {
+	protected function isUser(Site $site, $atLeast=null) {
 		$user = $site->users->user;
 		if($user === null) {
 			throw new APIException("Not authorized", APIException::NOT_AUTHORIZED);
+		}
+
+		if($atLeast !== null) {
+			$this->atLeast($user, $atLeast);
 		}
 
 		return $user;

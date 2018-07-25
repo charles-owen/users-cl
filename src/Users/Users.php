@@ -288,7 +288,6 @@ SQL;
 		return ['ok'=>true, 'id'=> $user->id];
 	}
 
-
 	
 	/** Delete a user 
 	 * @param $id User ID */

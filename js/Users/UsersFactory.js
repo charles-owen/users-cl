@@ -6,7 +6,6 @@
 import {User} from './User.js';
 import {StoreModuleUser} from './StoreModuleUser.js';
 import {StoreModuleUsers} from './StoreModuleUsers.js';
-import {Ready} from 'site-cl';
 
 let UsersFactory = function() {}
 

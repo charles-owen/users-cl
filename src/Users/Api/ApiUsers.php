@@ -69,11 +69,39 @@ class ApiUsers extends \CL\Users\Api\Resource {
 			case 'logout':
 				return $this->logout($site, $server, $time);
 
+			case 'preference':
+				return $this->preference($site, $server, $params, $time);
+
 			case 'tables':
 				return $this->tables($site, $server, new UserTables($site->db));
 		}
 
 		throw new APIException("Invalid API Path", APIException::INVALID_API_PATH);
+	}
+
+	private function preference(Site $site, Server $server, $params, $time) {
+		if(count($params) < 2) {
+			throw new APIException("Invalid API Path", APIException::INVALID_API_PATH);
+		}
+
+		$key = trim(strip_tags($params[1]));
+
+		$user = $this->isUser($site, User::USER);
+		$post = $server->post;
+		if(isset($post['value'])) {
+			// We are setting the preference
+			$user->metaData->set(User::METADATA_PREFERENCES, $key, strip_tags($post['value']));
+			$users = new Users($site->db);
+			$users->writeMetaData($user);
+			return new JsonAPI();
+		} else {
+			// We are getting the preference
+			$json = new JsonAPI();
+			$json->addData('preference', $user->id,
+				$user->metaData->get(User::METADATA_PREFERENCES, $key));
+
+			return $json;
+		}
 	}
 
 	private function login(Site $site, Server $server, $time) {

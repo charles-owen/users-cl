@@ -17,6 +17,8 @@ use \CL\Site\Site;
 class User implements MetaDataOwner {
 	const COOKIENAME = "-fg3bsck8m9";
 
+	const METADATA_PREFERENCES = 'preferences';
+
 	/// Duration after which JWT token expires
 	const JWT_EXPIRATION = 60 * 60 * 24;     // 24 hours
 
@@ -127,6 +129,7 @@ class User implements MetaDataOwner {
 				return $this->member;
 
 			case 'metaData':
+			case 'meta':
 				if($this->metaData === null) {
 					$this->metaData = new MetaData($this);
 				}
