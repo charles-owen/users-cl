@@ -42,5 +42,3 @@ Console.components.addOption({
         {route: '/management/user/:id', name: 'user', component: UserEditorComponent, props: true}
     ]
 });
-
-export default UsersConsole;

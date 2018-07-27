@@ -52,7 +52,7 @@
         mounted: function() {
             this.redirect = this.$route.query.u;
             if(this.redirect === undefined || this.redirect === null) {
-                this.redirect = Site.root;
+                this.redirect = Site.root + '/';
             }
         },
         methods: {

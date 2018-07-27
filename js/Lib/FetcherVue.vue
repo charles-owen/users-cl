@@ -12,7 +12,6 @@
    * @file
    * Fetcher component displays "Fetching" and a "more" button.
    */
-
   export let Fetcher = function() {
       this.more = false;       // Indicates there is more to fetch
       this.fetching = false;  // Set true while we are fetching

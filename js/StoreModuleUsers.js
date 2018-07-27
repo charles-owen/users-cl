@@ -3,8 +3,8 @@
  * Vuex store module that maintains a collection of system users.
  */
 
-import {Fetcher} from '../Lib/FetcherVue.vue';
-import {User} from './User.js';
+import {Fetcher} from './Lib/FetcherVue.vue';
+import {User} from './Users/User.js';
 
 const LIMIT = 300;
 

@@ -5,7 +5,7 @@
 
 import {User} from './User.js';
 import {StoreModuleUser} from './StoreModuleUser.js';
-import {StoreModuleUsers} from './StoreModuleUsers.js';
+import {StoreModuleUsers} from '../StoreModuleUsers.js';
 
 let UsersFactory = function() {}
 
@@ -24,7 +24,6 @@ UsersFactory.create = function(site) {
     //
     // Exported components and constants
     //
-    Users.User = User;
     Users.MUST_PROVIDE_USERID_OR_EMAIL = 101;
     Users.PASSWORDS_MUST_MATCH = 102;
     Users.DUPLICATE_USER = 103;

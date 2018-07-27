@@ -41,8 +41,8 @@
                 timer: null,
                 set: false,
                 more: false,
-                searcher: Site.root + 'vendor/cl/site/img/search.png',
-                deleter: Site.root + 'vendor/cl/site/img/x.png',
+                searcher: Site.root + '/vendor/cl/site/img/search.png',
+                deleter: Site.root + '/vendor/cl/site/img/x.png',
             }
         },
         watch: {

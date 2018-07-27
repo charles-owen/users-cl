@@ -44,8 +44,10 @@
 
 <script>
     import Dialog from 'dialog-cl';
-    import {mapState} from 'vuex';
+   // import {mapState} from 'vuex';
     import FetcherVue from '../Lib/FetcherVue.vue';
+
+    const mapState = Site.Vuex.mapState;
 
     export default {
         props: [
@@ -54,11 +56,11 @@
         data: function() {
             return {
                 toNew: Site.root + 'cl/console/management/user/new',
-                pencil: Site.root + 'vendor/cl/site/img/pencil16.png',
-                deleter: Site.root + 'vendor/cl/site/img/x.png',
-                info: Site.root + 'vendor/cl/site/img/info16.png',
+                pencil: Site.root + '/vendor/cl/site/img/pencil16.png',
+                deleter: Site.root + '/vendor/cl/site/img/x.png',
+                info: Site.root + '/vendor/cl/site/img/info16.png',
                 toUser: function(user) {
-                      return Site.root + 'cl/console/management/user/' + user.id;
+                      return Site.root + '/cl/console/management/user/' + user.id;
                 }
             }
         },
@@ -92,7 +94,7 @@
 
         }),
         mounted() {
-            this.$parent.setTitle(Console.title + ': Users');
+            this.$parent.setTitle(': Users');
             this.$store.dispatch('users/fetch');
         },
         components: {

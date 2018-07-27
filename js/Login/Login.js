@@ -46,4 +46,4 @@ Login.start = function(site) {
 
 }
 
-export default Login;
+Login.start();

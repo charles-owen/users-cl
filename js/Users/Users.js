@@ -2,13 +2,11 @@ import {UsersFactory} from './UsersFactory.js';
 
 import FetcherVue from '../Lib/FetcherVue.vue';
 import UserSelectorVue from '../Lib/UserSelectorVue.vue';
-import {StoreModuleUsers} from './StoreModuleUsers.js';
+import {User} from './User.js';
 
 export {FetcherVue};
 export {UserSelectorVue};
-export {StoreModuleUsers};
+export {User};
 
-// Use the factory to create the Users object
-if(global.Users === undefined) {
-    global.Users = UsersFactory.create(global.Site);
-}
+let Users = UsersFactory.create(Site.Site);
+export {Users};

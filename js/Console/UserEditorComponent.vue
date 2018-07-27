@@ -54,7 +54,7 @@
         props: ['id'],
         data: function() {
             return {
-                cancel: Site.root + 'cl/console/management/users',
+                cancel: Site.root + '/cl/console/management/users',
                 legend: this.id === 'new' ? 'New User' : 'Edit User',
                 roles: Users.User.getUserRoles(),
 
@@ -75,13 +75,13 @@
         },
         mounted() {
             if(this.id === 'new') {
-                this.$parent.setTitle(Console.title + ': Add User');
+                this.$parent.setTitle(': Add User');
                 this.role = Users.User.USER;
                 this.$nextTick(() => {
                     this.$refs.userid.select();
                 })
             } else {
-                this.$parent.setTitle(Console.title + ': User');
+                this.$parent.setTitle(': User');
                 this.$store.dispatch('users/get', {id: this.id})
                     .then((user) => {
                         this.userId = user.userId;
