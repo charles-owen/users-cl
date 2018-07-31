@@ -15,9 +15,11 @@ namespace CL\Users;
  * allows a user to automatically log back in.
  */
 class Autologin extends \CL\Tables\Table {
+	/// The cookie name to use for autologin
 	const COOKIENAME = "-o65e64gzy6";
-	const PERIOD = 30;		///< Days we keep logged in
 
+	/// Days we keep logged in
+	const PERIOD = 30;
 	/**
 	 * Constructor
 	 * @param \CL\Tables\Config $config The Database configuration object
@@ -46,7 +48,8 @@ QUERY;
 	 * Create a record for automatic login
 	 *
 	 * Both ID and token are 32 character strings of [a-zA-Z0-9]
-	 * @param $userid ID for the user we are creating an autologin record for
+	 * @param $userid ID for the user we are creating an autologin record for.
+	 * @param int $time Time to set.
 	 * @return array with keys 'id' and 'token'
 	 */
 	public function create($userid, $time) {
@@ -68,11 +71,12 @@ SQL;
 
 	/**
 	 * Validate an id/token combination.
-	 * @param $id ID
-	 * @param $token Token
-	 * @param $days Days old we will accept
-	 * @param null $time Current time (or null for time())
-	 * @return null|\User User object if successful and user exists or null.
+	 * @param int $id ID
+	 * @param string $token Token
+	 * @param int $time Time to set
+	 * @param int $days Days old we will accept
+	 * @param int $time Current time
+	 * @return User object if successful and user exists or null.
 	 */
 	public function validate($id, $token, $time, $days=self::PERIOD) {
 		// Make the time the oldest time we will accept

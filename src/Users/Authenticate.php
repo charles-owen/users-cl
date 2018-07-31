@@ -4,9 +4,6 @@
  * Base class for authentication mechanisms
  */
 
-/**
- * Classes associated with user authentication
- */
 namespace CL\Users;
 
 use \Firebase\JWT\JWT;
@@ -31,7 +28,7 @@ class Authenticate {
 	 * 'sandbox-bypass'=>true will bypass passwords if
 	 * we are in the sandbox.
 	 *
-	 * 'email-strip'=>true will strip @anything from the
+	 * 'email-strip'=>true will strip \@anything from the
 	 * entered address, reducing to just the user ID.
 	 */
 	public function __construct($options = []) {
@@ -44,12 +41,10 @@ class Authenticate {
 	 * This is called for every page to verify that the user
 	 * is currently authenticated.
 	 *
-	 * @param \Course $course Course object
-	 * @param User|\User $user Already known User object
-	 * @param $post The $_POST array
-	 * @param $cookie The $_COOKIE array
-	 * @param null $time Current time
-	 * @return User object or null if not authenticated
+	 * @param Site $site Site object
+	 * @param Server $server Server object
+	 * @param int $time Current time
+	 * @return User User if valid login, null otherwise.
 	 */
 	public function authenticate(Site $site, Server $server, $time) {
 		// Are we already authenticated
@@ -207,7 +202,7 @@ class Authenticate {
 	/**
 	 * Get a user ID from $post['userid']
 	 *
-	 * This strips any @domain from the user id and does a basic security test.
+	 * This strips any \@domain from the user id and does a basic security test.
 	 *
 	 * @param array $post $_POST
 	 * @return string|null user ID or null if invalid.
@@ -234,5 +229,5 @@ class Authenticate {
 		return $username;
 	}
 
-	protected $options;
+	protected $options; ///< Options passed to the constructor.
 }

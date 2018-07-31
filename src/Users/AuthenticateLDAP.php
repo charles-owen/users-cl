@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *
+ * LDAP-based authentication
  */
 
 namespace CL\Users;
@@ -10,17 +10,31 @@ use \CL\Site\Site;
 use \CL\Site\System\Server;
 use \CL\Site\Api\APIException;
 
+/**
+ * LDAP-based authentication
+ */
 class AuthenticateLDAP extends Authenticate {
 	/**
 	 * Authenticate constructor.
+	 *
+	 * Example usage:
+	 * \code:
+	 * $site->users->auth = new \CL\Users\AuthenticateLDAP(['sandbox-bypass'=>true, 'email-strip' => true],
+	 *           "ldap://ds.cse.msu.edu:389",
+	 *           "ou=People,dc=cse,dc=msu,dc=edu"
+	 * );
+	 * \endcode
+	 *
 	 * @param array $options That can contain options we can add.
 	 * Possible options:
 	 *
 	 * 'sandbox-bypass'=>true will bypass passwords if
 	 * we are in the sandbox.
 	 *
-	 * 'email-strip'=>true will strip @anything from the
+	 * 'email-strip'=>true will strip \@anything from the
 	 * entered address, reducing to just the user ID.
+	 * @param string $url URL for the LDAP server
+	 * @param string $basedn Base domain name indication.
 	 */
 	public function __construct($options = [], $url, $basedn) {
 		parent::__construct($options);

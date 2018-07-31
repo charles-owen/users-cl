@@ -6,6 +6,7 @@
  * This is the table 'user'
  */
 
+/// Classes in the Users subsystem
 namespace CL\Users;
 
  

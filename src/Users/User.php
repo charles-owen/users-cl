@@ -15,8 +15,10 @@ use \CL\Site\Site;
  * Class that defines a site user
  */
 class User implements MetaDataOwner {
+	/// Prefix for the cookie for the current user connection
 	const COOKIENAME = "-fg3bsck8m9";
 
+	/// Name for the preferences MetaData category
 	const METADATA_PREFERENCES = 'preferences';
 
 	/// Duration after which JWT token expires
@@ -96,20 +98,22 @@ class User implements MetaDataOwner {
 	 * dataJWT | array | Data from the Json Web Token
 	 * displayName | string | Name in the form First Last
 	 * email | string | Email address
+	 * guest | boolean | True if this user is a guest user
 	 * hasPassword | boolean | true if this user has a password set in the database
 	 * id | int | Internal user ID
 	 * member | Membership | Any active membership for this user
+	 * meta | MetaData | Meta-data for this user (short version)
 	 * metaData | MetaData | Meta-data for this user
 	 * name | string | User name (Last, First)
 	 * role | string | User role (see above roles)
 	 * userId | string | External (world) user ID
 	 *
 	 *
-	 * @param string $key Property name
-	 * @return Course|mixed|null|string Property value
+	 * @param string $property Property name
+	 * @return mixed Property value
 	 */
-	public function __get($key) {
-		switch($key) {
+	public function __get($property) {
+		switch($property) {
 			case 'dataJWT':
 				return $this->dataJWT;
 
@@ -118,6 +122,9 @@ class User implements MetaDataOwner {
 
 			case 'email':
 				return $this->email;
+
+			case 'guest':
+				return $this->role() === User::GUEST;
 
 			case 'hasPassword':
 				return $this->hasPassword;
@@ -149,13 +156,10 @@ class User implements MetaDataOwner {
 			case 'userId':
 				return $this->userId;
 
-			case 'guest':
-				return $this->role() === User::GUEST;
-
             default:
                 $trace = debug_backtrace();
                 trigger_error(
-                    'Undefined property ' . $key .
+                    'Undefined property ' . $property .
                     ' in ' . $trace[0]['file'] .
                     ' on line ' . $trace[0]['line'],
                     E_USER_NOTICE);
@@ -190,11 +194,11 @@ class User implements MetaDataOwner {
      * role | string | User role (see constants above)
      * userId | string | External (world) user ID
      *
-     * @param $key Property name
-     * @param $value Value to set
+     * @param string $property Property name
+     * @param mixed $value Value to set
      */
-    public function __set($key, $value) {
-        switch($key) {
+    public function __set($property, $value) {
+        switch($property) {
 	        case 'email':
 		        $this->email = $value;
 		        break;
@@ -223,7 +227,7 @@ class User implements MetaDataOwner {
             default:
                 $trace = debug_backtrace();
                 trigger_error(
-                    'Undefined property ' . $key .
+                    'Undefined property ' . $property .
                     ' in ' . $trace[0]['file'] .
                     ' on line ' . $trace[0]['line'],
                     E_USER_NOTICE);
@@ -332,10 +336,19 @@ class User implements MetaDataOwner {
 		$this->dataJWT = (array)($decoded->data);
 	}
 
+	/**
+	 * Set an additional key in the JWT (session) data
+	 * @param string $key Key name
+	 * @param mixed $value Value to set
+	 */
 	public function setJWT($key, $value) {
 		$this->dataJWT[$key] = $value;
 	}
 
+	/**
+	 * Removes a key from the JWT (session) data
+	 * @param string $key Key name
+	 */
 	public function unsetJWT($key) {
 		unset($this->dataJWT[$key]);
 	}
@@ -374,6 +387,11 @@ class User implements MetaDataOwner {
 		return ($roles[$this->role()]['priority'] >= $roles[$atLeast]['priority']);
 	}
 
+	/**
+	 * Generate data to send to a client about this user.
+	 * @param bool $private True if we sent all data, including private to user
+	 * @return array Data
+	 */
 	public function data($private = false) {
 		$data = [
 			'id'=>$this->id,
@@ -390,11 +408,11 @@ class User implements MetaDataOwner {
 		return $data;
 	}
 
-	private $id = 0;		    // Unique enrollment ID
-	private $userId = null;	    // User id (MSU id)
-	private $email = null;		// Email address
+	private $id = 0;		    ///< Unique internal ID
+	private $userId = null;	    ///< User id (like an MSU id)
+	private $email = null;		///< Email address
 	private $name = '';		    ///< User name, default is empty
-	private $role = User::GUEST;		// Role value, see constants above
+	private $role = User::GUEST;	///< Role value, see constants above
 	private $hasPassword = false;	///< User has a password set
 	private $dataJWT = [];      ///< Data included in authenication JWT
 	private $metaData = null;   ///< Attached meta-data

@@ -1,9 +1,10 @@
 <template>
-  <div v-if="fetcher.more || fetcher.fetching">
-    <div>
-      <p class="more" v-if="fetcher.more"><button @click.prevent="fetchMore">MORE</button></p>
-      <p class="fetching" v-if="fetcher.fetching">Fetching from server...</p>
+  <div>
+    <div class="fetching" v-if="(fetcher !== null && fetcher.fetching) || fetching">
+      <p>Fetching from server...</p>
     </div>
+    <slot v-if="(fetcher === null || !fetcher.fetching) && !fetching"></slot>
+    <p class="more" v-if="fetcher !== null && fetcher.more"><button @click.prevent="fetchMore">MORE</button></p>
   </div>
 </template>
 
@@ -42,9 +43,16 @@
 
 
   export default {
-      props: [
-          'fetcher'
-      ],
+      props: {
+        fetcher: {
+            type: Object,
+            default: null
+        },
+        fetching: {
+            type: Boolean,
+            default: false
+        }
+      },
       methods: {
           fetchMore() {
               this.$parent.fetchMore();
@@ -56,28 +64,28 @@
 
 <style lang="scss" scoped>
 
-  @import '../../../site/sass/modules/_colors';
+@import '../../../site/sass/modules/_colors';
 
-  div {
-    height: 28px;
-    margin: 1em 0;
+div.fetching {
+  height: 28px;
+  margin: 1em 0;
 
-    .more {
-      text-align: center;
-
-      button {
-        font-size: 0.8em;
-        height: 28px;
-        margin: 0;
-      }
-    }
-
-    .fetching {
-      text-align: center;
-      font-style: italic;
-      color: $comp;
-      padding-top: 2px;
-    }
+  p {
+    text-align: center;
+    font-style: italic;
+    color: $comp;
+    padding-top: 2px;
   }
+}
+
+.more {
+  text-align: center;
+
+  button {
+    font-size: 0.8em;
+    height: 28px;
+    margin: 0;
+  }
+}
 
 </style>

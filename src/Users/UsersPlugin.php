@@ -10,6 +10,7 @@ use CL\Site\Site;
 use CL\Site\System\Server;
 use CL\Users\Api\ApiUsers;
 use CL\Site\Router;
+use CL\Console\ConsoleView;
 
 /**
  * Site plugin for the Users subsystem
@@ -29,7 +30,7 @@ class UsersPlugin extends \CL\Site\Plugin  {
 
 	/**
 	 * Property get magic method
-	 * @param string $key Property name
+	 * @param string $property Property name
 	 *
 	 * <b>Properties</b>
 	 * Property | Type | Description
@@ -41,8 +42,8 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 *
 	 * @return null|string
 	 */
-	public function __get($key) {
-		switch($key) {
+	public function __get($property) {
+		switch($property) {
 			case 'auth':
 				return $this->auth;
 
@@ -56,7 +57,7 @@ class UsersPlugin extends \CL\Site\Plugin  {
 				return $this->user;
 
 			default:
-				return parent::__get($key);
+				return parent::__get($property);
 		}
 	}
 
@@ -69,11 +70,11 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 * auth | Authenticate | Install user authentication component
 	 * user | User | The authenticated user
 	 *
-	 * @param string $key Property name
+	 * @param string $property Property name
 	 * @param string $value Value to set
 	 */
-	public function __set($key, $value) {
-		switch($key) {
+	public function __set($property, $value) {
+		switch($property) {
 			case 'auth':
 				$this->auth = $value;
 				break;
@@ -83,7 +84,7 @@ class UsersPlugin extends \CL\Site\Plugin  {
 				break;
 
 			default:
-				parent::__set($key, $value);
+				parent::__set($property, $value);
 				break;
 		}
 	}
@@ -239,11 +240,6 @@ class UsersPlugin extends \CL\Site\Plugin  {
 			}
 		}
 
-		//
-		// Install in the control panel
-		//
-		$site->console->addPlugin('usersconsole', []);
-
 		return null;
 	}
 
@@ -258,13 +254,15 @@ class UsersPlugin extends \CL\Site\Plugin  {
 			$router = $object;
 			$router->addRoute(['login'], function(Site $site, Server $server, array $params, array $properties, $time) {
 				$view = new LoginView($site);
-				return $view->vue('login');
+				return $view->vue('cl-login');
 			});
 
 			$router->addRoute(['api', 'users', '*'], function(Site $site, Server $server, array $params, array $properties, $time) {
 				$resource = new ApiUsers();
 				return $resource->apiDispatch($site, $server, $params, $properties, $time);
 			});
+		} else if($object instanceof ConsoleView) {
+			$object->addJS('usersconsole');
 		}
 	}
 
