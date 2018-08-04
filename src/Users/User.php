@@ -388,6 +388,14 @@ class User implements MetaDataOwner {
 	}
 
 	/**
+	 * Return true if a user is staff or better
+	 * @return bool
+	 */
+	public function is_staff() {
+		return $this->atLeast(User::STAFF);
+	}
+
+	/**
 	 * Generate data to send to a client about this user.
 	 * @param bool $private True if we sent all data, including private to user
 	 * @return array Data

@@ -211,10 +211,24 @@ class ApiUsers extends \CL\Users\Api\Resource {
 		$json = new JsonAPI();
 		$json->addData('users', 0, $reply);
 
+		if(!empty($get['prevnext']) && count($result) === 1) {
+			$user = $result[0];
+			$prevs = $users->query(['before'=>['name'=>$user->name, 'id'=>$user->id], 'limit'=>1]);
+			if(count($prevs) > 0) {
+				$json->addData('prev-user', 0, $prevs[0]->data());
+			}
+
+			$nexts = $users->query(['after'=>['name'=>$user->name, 'id'=>$user->id], 'limit'=>1]);
+			if(count($nexts) > 0) {
+				$json->addData('next-user', 0, $nexts[0]->data());
+			}
+		}
+
 		// Sequence echo option.
 		if(!empty($get['seq'])) {
 			$json->addData('seq', strip_tags($get['seq']), []);
 		}
+		
 		return $json;
 	}
 

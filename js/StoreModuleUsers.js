@@ -6,7 +6,7 @@
 import {Fetcher} from './Lib/FetcherVue.vue';
 import {User} from './Users/User.js';
 
-const LIMIT = 300;
+const LIMIT = 500;
 
 export let StoreModuleUsers = function() {
 }
@@ -182,16 +182,35 @@ StoreModuleUsers.create = function(api, toId) {
                 return new Promise((resolve, reject) => {
                     // We may have the desired user loaded or we
                     // may have to go get them.
-                    for(let user of state.users) {
+                    let prev = null;
+                    for(let i=0; i<state.users.length; i++) {
+                        let user = state.users[i];
                         if(toId(user) === id) {
+                            if((i+1) < state.users.length) {
+                                user.next = state.users[i+1];
+                            }
+
+                            if(prev !== null) {
+                                user.prev = prev;
+                            }
+
                             resolve(user);
                             return;
                         }
+
+                        prev = user;
+                    }
+                    for(let user of state.users) {
+
                     }
 
                     // Go get the user
                     commit('fetchStart', true);
-                    Site.api.get(api, {id: id})
+                    const query = {
+                      id: id,
+                      prevnext: 1
+                    };
+                    Site.api.get(api, query)
                         .then((response) => {
                             if(!response.hasError()) {
                                 const data = response.getData('users');
@@ -201,6 +220,17 @@ StoreModuleUsers.create = function(api, toId) {
                                     } else {
                                         commit('fetchDone', true);
                                         let user = new Users.User(data.attributes[0]);
+
+                                        const prev = response.getData('prev-user');
+                                        if(prev !== null) {
+                                            user.prev = new Users.User(prev.attributes);
+                                        }
+
+                                        const next = response.getData('next-user');
+                                        if(next !== null) {
+                                            user.next = new Users.User(next.attributes);
+                                        }
+
                                         resolve(user);
                                     }
                                 }

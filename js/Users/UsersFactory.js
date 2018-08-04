@@ -8,7 +8,7 @@ import {StoreModuleUser} from './StoreModuleUser.js';
 import {StoreModuleUsers} from '../StoreModuleUsers.js';
 
 let UsersFactory = function() {}
-
+console.log("UsersFactory loaded");
 /**
  * Factory method to create a Users object.
  *

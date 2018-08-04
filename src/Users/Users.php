@@ -40,7 +40,9 @@ CREATE TABLE IF NOT EXISTS `$this->tablename` (
   created  datetime NOT NULL, 
   PRIMARY KEY (id), 
   UNIQUE INDEX (`user`), 
+  INDEX (name), 
   INDEX (role));
+
 SQL;
 
 		return $query;
@@ -52,6 +54,8 @@ SQL;
 	public function query($params = []) {
 		$where = new \CL\Tables\TableWhere($this);
 
+		$order = '`name`, id';
+
 		if(isset($params['id'])) {
 			$where->append('id=?', $params['id'], \PDO::PARAM_INT);
 		}
@@ -62,6 +66,28 @@ SQL;
 
 		if(isset($params['email'])) {
 			$where->append('email=?', $params['email']);
+		}
+
+		if(!empty($params['after'])) {
+			$where->nest();
+			$where->append('name > ?', $params['after']['name'], \PDO::PARAM_STR);
+			$where->nest('or');
+			$where->append('name = ?', $params['after']['name'], \PDO::PARAM_STR, 'or');
+			$where->append('id > ?', $params['after']['id'], \PDO::PARAM_INT, 'and');
+			$where->unnest();
+			$where->unnest();
+		}
+
+		if(!empty($params['before'])) {
+			$where->nest();
+			$where->append('name < ?', $params['before']['name'], \PDO::PARAM_STR);
+			$where->nest('or');
+			$where->append('name = ?', $params['before']['name'], \PDO::PARAM_STR, 'or');
+			$where->append('id < ?', $params['before']['id'], \PDO::PARAM_INT, 'and');
+			$where->unnest();
+			$where->unnest();
+
+			$order = '`name` desc, id desc';
 		}
 
 		if(isset($params['search'])) {
@@ -96,7 +122,7 @@ SQL;
 		$sql = <<<SQL
 select * from $this->tablename
 $where->where
-order by `name`, id
+order by $order
 SQL;
 
 		if(isset($params['limit'])) {
@@ -109,7 +135,7 @@ SQL;
 			$where->append(null, intval($params['offset']), \PDO::PARAM_INT);
 		}
 
-		//echo $where->sub_sql($sql);
+		// echo $where->sub_sql($sql);
 		$result = $where->execute($sql);
 		$users = [];
 		foreach($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {

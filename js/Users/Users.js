@@ -7,6 +7,6 @@ import {User} from './User.js';
 export {FetcherVue};
 export {UserSelectorVue};
 export {User};
-
+console.log('Users');
 let Users = UsersFactory.create(Site.Site);
 export {Users};
