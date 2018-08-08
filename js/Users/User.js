@@ -74,6 +74,7 @@ let User = function(json) {
             member.user = this;
         }
     }
+
 }
 
 User.GUEST = 'G';
@@ -127,6 +128,18 @@ User.prototype.getRolePriority = function(role) {
     }
 
     return 0;
+}
+
+User.prototype.displayName = function() {
+    let comma = this.name.indexOf(',');
+    if(comma < 0) {
+        return this.name;
+    }
+
+    let last = this.name.substr(0, comma);
+    let first = this.name.substr(comma+1).trim();
+
+    return first + ' ' + last;
 }
 
 User.prototype.userRoleName = function() {

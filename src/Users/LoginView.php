@@ -28,7 +28,7 @@ class LoginView extends \CL\Site\View {
 
 		$this->title = "Login";
 		$this->addJS('login');
-		$this->addJSON('cl-login', json_encode(['before'=>$this->before, 'after'=>$this->after]));
+		$this->addCLS('cl-login', json_encode(['before'=>$this->before, 'after'=>$this->after]));
 	}
 
 	/**

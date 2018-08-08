@@ -7,6 +7,7 @@
 </template>
 
 <script>
+  // TODO: Update PrevNextUser to work like PrevNextMember works
   export default {
       props: ['link', 'user'],
   }

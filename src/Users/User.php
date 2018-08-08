@@ -13,6 +13,12 @@ use \CL\Site\Site;
 
 /**
  * Class that defines a site user
+ *
+ * @cond
+ * @property Membership member
+ * @property MetaData meta
+ * @property MetaData metaData
+ * @endcond
  */
 class User implements MetaDataOwner {
 	/// Prefix for the cookie for the current user connection
@@ -106,6 +112,7 @@ class User implements MetaDataOwner {
 	 * metaData | MetaData | Meta-data for this user
 	 * name | string | User name (Last, First)
 	 * role | string | User role (see above roles)
+	 * staff | boolean | True if user is staff (at least)
 	 * userId | string | External (world) user ID
 	 *
 	 *
@@ -152,6 +159,9 @@ class User implements MetaDataOwner {
 				}
 
 				return $this->role;
+
+			case 'staff':
+				return $this->atLeast(User::STAFF);
 
 			case 'userId':
 				return $this->userId;

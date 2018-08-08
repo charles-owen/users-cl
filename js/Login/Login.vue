@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div v-html="before"></div>
+    <div v-if="json.before !== undefined" v-html="json.before"></div>
     <form class="left" id="login" @submit.prevent="submit" method="post">
       <fieldset>
         <p><label for="userid">User ID</label><br>
@@ -12,7 +12,7 @@
         <p class="msg">{{msg}}</p>
       </fieldset>
     </form>
-    <div class="left" v-html="after"></div>
+    <div class="left" v-if="json.after !== undefined" v-html="json.after"></div>
   </div>
 
 </template>
@@ -37,11 +37,7 @@
                 msg: ''
             }
         },
-        props: {
-            before: '',
-            after: ''
-        },
-
+        props: ['json'],
         created: function() {
             Site.api.post('/api/users/logout', {})
                 .then((response) => {
@@ -50,6 +46,7 @@
                 });
         },
         mounted: function() {
+            console.log(this.json);
             this.redirect = this.$route.query.u;
             if(this.redirect === undefined || this.redirect === null) {
                 this.redirect = Site.root + '/';

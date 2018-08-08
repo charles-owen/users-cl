@@ -254,7 +254,7 @@ class UsersPlugin extends \CL\Site\Plugin  {
 			$router = $object;
 			$router->addRoute(['login'], function(Site $site, Server $server, array $params, array $properties, $time) {
 				$view = new LoginView($site);
-				return $view->vue('cl-login');
+				return $view->vue();
 			});
 
 			$router->addRoute(['api', 'users', '*'], function(Site $site, Server $server, array $params, array $properties, $time) {

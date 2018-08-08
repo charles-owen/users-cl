@@ -59,5 +59,6 @@ class View extends \CL\Site\View {
 		}
 	}
 
+	/* @var  User */
 	protected $user;    ///< User object for current user
 }
