@@ -85,12 +85,10 @@
               let showFetching = (this.fetcher !== null && this.fetcher.fetching) || this.fetching;
               if(showFetching && !this.showFetching) {
                   // Fetching is becoming active
-                  console.log('fetching going active');
                   this.timer = setTimeout(() => {
                       this.delayedFetching = true;
                   }, 1000)
               } else if(!showFetching && this.showFetching) {
-                  console.log('fetching going inactive');
                   clearTimeout(this.timer);
                   this.time = null;
                   this.delayedFetching = false;
