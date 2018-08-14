@@ -164,6 +164,7 @@ class User implements MetaDataOwner {
 				return $this->atLeast(User::STAFF);
 
 			case 'userId':
+			case 'userid':
 				return $this->userId;
 
             default:
