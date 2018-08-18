@@ -213,6 +213,10 @@ class User implements MetaDataOwner {
      */
     public function __set($property, $value) {
         switch($property) {
+	        case 'dataJWT':
+				$this->dataJWT = $value;
+				break;
+
 	        case 'email':
 		        $this->email = $value;
 		        break;
@@ -452,7 +456,7 @@ class User implements MetaDataOwner {
 	private $name = '';		    ///< User name, default is empty
 	private $role = User::GUEST;	///< Role value, see constants above
 	private $hasPassword = false;	///< User has a password set
-	private $dataJWT = [];      ///< Data included in authenication JWT
+	private $dataJWT = [];      ///< Data included in authentication JWT
 	private $metaData = null;   ///< Attached meta-data
 
 	private $member = null;     // Any membership for this user

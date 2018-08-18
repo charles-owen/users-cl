@@ -31,7 +31,7 @@ class AutologinTest extends UsersDatabaseTestBase
 		$time = time() + 1234;
 
 		$autologin = new Autologin($this->site->db);
-		$cred = $autologin->create(4, $time);
+		$cred = $autologin->create(4, $time, []);
 
 		/* Basic test that it works */
 		$user = $autologin->validate($cred['id'], $cred['token'], $time + 1000);
@@ -47,7 +47,7 @@ class AutologinTest extends UsersDatabaseTestBase
 		$time = time() + 1234;
 
 		$autologin = new Autologin($this->site->db);
-		$cred = $autologin->create(4, $time);
+		$cred = $autologin->create(4, $time, []);
 
 		/* Basic test that it works */
 		$user = $autologin->validate($cred['id'], $cred['token'],  $time + 1010);
@@ -59,12 +59,12 @@ class AutologinTest extends UsersDatabaseTestBase
 		$this->assertNull($user);
 	}
 
-
-	public function test_create_sql() {
-		$autologin = new Autologin($this->site->db);
-		$sql = $autologin->createSQL();
-        $this->assertContains('autologin', $sql);
-	}
+//
+//	public function test_create_sql() {
+//		$autologin = new Autologin($this->site->db);
+//		$sql = $autologin->createSQL();
+//        $this->assertContains('autologin', $sql);
+//	}
 
 }
 

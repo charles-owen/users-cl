@@ -124,7 +124,7 @@ class ApiUsers extends \CL\Users\Api\Resource {
 		if(isset($server->post['keep']) && $server->post['keep']) {
 			// The automatic login cookie system
 			$autologin = new Autologin($site->db);
-			$cred = $autologin->create($user->id, $time);
+			$cred = $autologin->create($user->id, $time, $user->dataJWT);
 
 			$cookiename = $site->cookiePrefix . Autologin::COOKIENAME;
 

@@ -117,7 +117,7 @@ class Authenticate {
 				$server->deleteCookie($cookiename);
 			} else {
 				// Cookie valid, create a new cookie for the next login
-				$cred = $autologin->create($user->id, $time);
+				$cred = $autologin->create($user->id, $time, $user->dataJWT);
 
 				$server->setcookie($cookiename,
 					$cred['id'] . ':' . $cred['token'],

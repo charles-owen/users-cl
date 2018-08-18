@@ -33,12 +33,13 @@ class Autologin extends \CL\Tables\Table {
 
 		$query = <<<QUERY
 CREATE TABLE IF NOT EXISTS $this->tablename (
-  id      char(32) NOT NULL,
-  hash    varchar(128) NOT NULL,
-  salt    varchar(16) NOT NULL,
-  userid  int(10) NOT NULL,
-  created datetime NOT NULL,
+  id      char(32) NOT NULL, 
+  userid  int(11) NOT NULL, 
+  hash    varchar(255) NOT NULL, 
+  created datetime NOT NULL, 
+  data    mediumtext NOT NULL, 
   PRIMARY KEY (id));
+
 QUERY;
 
 		return $query;
@@ -48,24 +49,26 @@ QUERY;
 	 * Create a record for automatic login
 	 *
 	 * Both ID and token are 32 character strings of [a-zA-Z0-9]
-	 * @param $userid ID for the user we are creating an autologin record for.
+	 * @param int $userid ID for the user we are creating an autologin record for.
 	 * @param int $time Time to set.
+	 * @param array $data Data to include in the login record.
 	 * @return array with keys 'id' and 'token'
 	 */
-	public function create($userid, $time) {
+	public function create($userid, $time, $data) {
 		$id = self::createToken(32);
 		$token = self::createToken(32);
 
 		$pdo = $this->pdo();
 		$sql = <<<SQL
-insert into $this->tablename(id, hash, userid, created)
-values(?, ?, ?, ?)
+insert into $this->tablename(id, hash, userid, created, data)
+values(?, ?, ?, ?, ?)
 SQL;
 
 		$hash = password_hash($token, PASSWORD_DEFAULT );
 
 		$stmt = $pdo->prepare($sql);
-		$stmt->execute([$id, $hash, $userid, $this->timeStr($time)]);
+		$stmt->execute([$id, $hash, $userid, $this->timeStr($time),
+			json_encode($data)]);
 		return array("id" => $id, "token" => $token);
 	}
 
@@ -84,7 +87,7 @@ SQL;
 
 		$pdo = $this->pdo();
 		$sql = <<<SQL
-select hash, userid
+select hash, userid, data
 from $this->tablename
 where id=? and created>?
 SQL;
@@ -98,15 +101,30 @@ SQL;
 		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
 		if(password_verify($token, $row['hash'])) {
 			$users = new Users($this->config);
-			return $users->get($row['userid']);
+			$user = $users->get($row['userid']);
+			$user->dataJWT = json_decode($row['data'], true);
+			return $user;
 		}
 
 		return null;
 	}
 
+	public function updateData($id, $data) {
+		$pdo = $this->pdo();
+		$sql = <<<SQL
+update $this->tablename
+set data=?
+where id=?
+SQL;
+
+		$exec = [json_encode($data), $id];
+		$stmt = $pdo->prepare($sql);
+		return($stmt->execute($exec) !== false && $stmt->rowCount() > 0);
+	}
+
 	/**
 	 * Delete an autologin record by id
-	 * @param $id ID to delete
+	 * @param int $id ID to delete
 	 * @return bool true if successful
 	 */
 	public function delete($id) {
