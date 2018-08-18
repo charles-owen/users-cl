@@ -1,7 +1,7 @@
 <template>
   <div class="cl-user-editor content">
     <div class="full">
-      <prev-next :link="prevnextLink" :user="user"></prev-next>
+      <prev-next :user="user"></prev-next>
 
       <fetcher :fetcher="fetcher"></fetcher>
       <div >
@@ -55,7 +55,6 @@
         data: function() {
             return {
                 cancel: Site.root + '/cl/console/management/users',
-                prevnextLink: Site.root + '/cl/console/management/user/',
                 legend: this.id === 'new' ? 'New User' : 'Edit User',
                 roles: Users.User.getUserRoles(),
 

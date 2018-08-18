@@ -46,7 +46,6 @@
                 });
         },
         mounted: function() {
-            console.log(this.json);
             this.redirect = this.$route.query.u;
             if(this.redirect === undefined || this.redirect === null) {
                 this.redirect = Site.root + '/';

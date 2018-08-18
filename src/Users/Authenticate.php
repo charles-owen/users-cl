@@ -64,13 +64,13 @@ class Authenticate {
 				$decoded = null;
 			}
 
+			$user = null;
 			if($decoded !== null) {
 				if($decoded->data->id > 0) {
 					$users = new Users($site->db);
 					$user = $users->get($decoded->data->id);
 					if($user !== null) {
 						$user->setFromJWT($decoded);
-						return $user;
 					}
 				} else {
 					// A zero ID users is special since it is not
@@ -83,8 +83,18 @@ class Authenticate {
 							'name'=>$u['name'],
 							'role'=>$u['role']]);
 						$user->setFromJWT($decoded);
-						return $user;
 					}
+				}
+
+				if($user !== null) {
+					// Renew JWT if older than the renewal period.
+					if(($time - $decoded->iat) > User::JWT_RENEWAL) {
+						$jwt = $user->createJWT($site, $time);
+						$cookiename = $site->cookiePrefix . User::COOKIENAME;
+						$server->setcookie($cookiename, $jwt, 0, "/");
+					}
+
+					return $user;
 				}
 			}
 		}

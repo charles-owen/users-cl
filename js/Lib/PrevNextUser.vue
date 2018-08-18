@@ -1,14 +1,67 @@
 <template>
-  <div class="cl-prevnext">
-    <div v-if="user !== null && user.prev !== undefined" class="prev"><router-link :to="this.link + user.prev.id">Previous User</router-link></div>
-    <slot></slot>
-    <div v-if="user !== null && user.next !== undefined" class="next"><router-link :to="this.link + user.next.id">Next User</router-link></div>
-  </div>
+  <div></div>
 </template>
 
 <script>
-  // TODO: Update PrevNextUser to work like PrevNextMember works
   export default {
-      props: ['link', 'user'],
+      props: ['user'],
+      data: function() {
+          return {
+              link: '',
+          }
+      },
+      watch: {
+          user: function() {
+              // We have a new user, set the links
+              let user = this.user;
+              let link = this.link;
+
+              if(user !== null && user.prev !== undefined) {
+                  this.$set(Site.Console.components, 'nav2left', {
+                      template: `<router-link title="Previous User" :to="link + user.prev.id"><img :src="icon" alt="Previous User"></router-link>`,
+                      data: function() {
+                          return {
+                              icon: Site.root + '/vendor/cl/site/img/previcon.png',
+                              user: user,
+                              link: link
+                          }
+                      }
+                  });
+              } else {
+                  this.$set(Site.Console.components, 'nav2left', null);
+              }
+
+              if(user !== null && user.next !== undefined) {
+                  this.$set(Site.Console.components, 'nav2right', {
+                      template: `<router-link title="Next User" :to="link + user.next.id"><img :src="icon" alt="Next User"></router-link>`,
+                      data: function() {
+                          return {
+                              icon: Site.root + '/vendor/cl/site/img/nexticon.png',
+                              user: user,
+                              link: link
+                          }
+                      }
+                  });
+              } else {
+                  this.$set(Site.Console.components, 'nav2right', null);
+              }
+          }
+      },
+      mounted() {
+          // Determine the path
+          const path = this.$route.path;
+
+          // Remove the user ID from the end
+          const re = /(^.*)\/([0-9]+)$/;
+          const match = path.match(re);
+          if(match !== null) {
+              this.link = match[1] + '/';
+          }
+      },
+      beforeDestroy() {
+          this.$set(Site.Console.components, 'nav2left', null);
+          this.$set(Site.Console.components, 'nav2right', null);
+      }
   }
 </script>
+

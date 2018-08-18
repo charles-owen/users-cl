@@ -14,6 +14,13 @@ use CL\Console\ConsoleView;
 
 /**
  * Site plugin for the Users subsystem
+ *
+ * @cond
+ * @property User user
+ * @property Authenticate auth
+ * @property string publicKey
+ * @property string privateKey
+ * @endcond
  */
 class UsersPlugin extends \CL\Site\Plugin  {
 	/**

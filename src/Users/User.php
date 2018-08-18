@@ -28,7 +28,10 @@ class User implements MetaDataOwner {
 	const METADATA_PREFERENCES = 'preferences';
 
 	/// Duration after which JWT token expires
-	const JWT_EXPIRATION = 60 * 60 * 24;     // 24 hours
+	const JWT_EXPIRATION = 60 * 60 * 1;     // 1 hour
+
+	/// When a JWT is this old (seconds) we renew it
+	const JWT_RENEWAL = 60;
 
 	// User role codes in order of access permissions
     const GUEST = "G";		///< Guest user visiting the site
@@ -321,7 +324,7 @@ class User implements MetaDataOwner {
 
 		$token = [
 			"iat" => $time,     // Issued at
-			"iss" => "fitbuilder.org",  // Issuer application
+			"iss" => $site->server, // "fitbuilder.org",  // Issuer application
 			"nbf" => $time,      // Not before
 			"exp" => $time + self::JWT_EXPIRATION,
 			"data" => $this->dataJWT
@@ -388,7 +391,8 @@ class User implements MetaDataOwner {
 
 	/** Test that a user's role has a priority at least at some specified level
 	 * @param string $atLeast The role the user must be for this to be true
-	 * @return bool True if the role is at least the specified role */
+	 * @return bool True if the role is at least the specified role
+	 */
 	public function atLeast($atLeast) {
 		$roles = $this->getRoles();
 		if(!isset($roles[$atLeast])) {
@@ -396,6 +400,21 @@ class User implements MetaDataOwner {
 		}
 
 		return ($roles[$this->role()]['priority'] >= $roles[$atLeast]['priority']);
+	}
+
+	/**
+	 * Test that a specified role is at least some required level.
+	 * @param string $role Role to test
+	 * @param string $atLeast The role must be for this to be true
+	 * @return bool True if the role is at least the specified role
+	 */
+	public function roleAtLeast($role, $atLeast) {
+		$roles = $this->getRoles();
+		if(!isset($roles[$atLeast])) {
+			return false;
+		}
+
+		return ($roles[$role]['priority'] >= $roles[$atLeast]['priority']);
 	}
 
 	/**
