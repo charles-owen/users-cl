@@ -109,6 +109,14 @@ SQL;
 		return null;
 	}
 
+	/**
+	 * Update the data component of an autologin record.
+	 *
+	 * This is used to add the dataJWT from User to the record.
+	 * @param int $id ID for the autologin record
+	 * @param array $data New data to set
+	 * @return bool true if successful
+	 */
 	public function updateData($id, $data) {
 		$pdo = $this->pdo();
 		$sql = <<<SQL

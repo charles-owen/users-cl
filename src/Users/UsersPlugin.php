@@ -46,6 +46,7 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 * privateKey | string | Private key to use for JWT
 	 * publicKey | string | Public key to use for JWT
 	 * user | User | The authenticated user
+	 * permission | array | The permissions mapping array
 	 *
 	 * @return null|string
 	 */
@@ -62,6 +63,9 @@ class UsersPlugin extends \CL\Site\Plugin  {
 
 			case 'user':
 				return $this->user;
+
+			case 'permissions':
+				return $this->permissions;
 
 			default:
 				return parent::__get($property);
@@ -126,7 +130,7 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 * For a tagged permission object, set the minimum permission.
 	 *
 	 * The tagged permission system allows tags to be set
-	 * the define the permissions necesary to use parts of the system.
+	 * that define the permissions necesary to use parts of the system.
 	 *
 	 * @param string $tag Tag specified for the permission item.
 	 * @param string $permission Minimum permission to set.

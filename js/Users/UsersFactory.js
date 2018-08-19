@@ -3,9 +3,10 @@
  * Factory that creates the Users object
  */
 
-import {User} from './User.js';
-import {StoreModuleUser} from './StoreModuleUser.js';
-import {StoreModuleUsers} from '../StoreModuleUsers.js';
+import {User} from './User';
+import {StoreModuleUser} from './StoreModuleUser';
+import {StoreModuleUsers} from '../StoreModuleUsers';
+import {Permissions} from './Permissions';
 
 let UsersFactory = function() {}
 console.log("UsersFactory loaded");
@@ -52,6 +53,11 @@ UsersFactory.create = function(site) {
         if( (en = document.getElementById('cl-user')) !== null) {
             store.commit('user/set', JSON.parse(en.textContent));
         }
+
+        // Add permissions array if available
+	    if( (en = document.getElementById('cl-permissions')) !== null) {
+		    site.permissions = new Permissions(JSON.parse(en.textContent));
+	    }
     });
 
     return Users;
