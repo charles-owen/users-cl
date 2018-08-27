@@ -4,7 +4,7 @@
 
       <div v-if="fetcher.fetched">
         <p v-if="management" class="center">
-          <router-link :to="toNew" tag="button">Add User</router-link>
+          <router-link :to="root + '/cl/console/management/user/new'" tag="button">Add User</router-link>
         </p>
         <table v-if="users.length > 0">
           <tr>
@@ -55,7 +55,7 @@
         ],
         data: function() {
             return {
-                toNew: Site.root + 'cl/console/management/user/new',
+            	root: Site.root,
                 pencil: Site.root + '/vendor/cl/site/img/pencil16.png',
                 deleter: Site.root + '/vendor/cl/site/img/x.png',
                 info: Site.root + '/vendor/cl/site/img/info16.png',

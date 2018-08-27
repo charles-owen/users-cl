@@ -278,7 +278,7 @@ SQL;
 	}
 
 	/**
-	 * Add a new user to the database
+	 * Update a user in the database
 	 * @param User $user User to add
 	 * @returns array with keys:
 	 *     ok: true if successfully inserted

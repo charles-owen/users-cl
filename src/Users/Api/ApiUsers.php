@@ -72,11 +72,34 @@ class ApiUsers extends \CL\Users\Api\Resource {
 			case 'preference':
 				return $this->preference($site, $server, $params, $time);
 
+			case 'userupdate':
+				return $this->userUpdate($site, $server, $time);
+
 			case 'tables':
 				return $this->tables($site, $server, new UserTables($site->db));
 		}
 
 		throw new APIException("Invalid API Path", APIException::INVALID_API_PATH);
+	}
+
+	private function userUpdate(Site $site, Server $server, $time) {
+		$user = $this->isUser($site, User::USER);
+
+		$post = $server->post;
+		if($server->requestMethod !== 'POST') {
+			new APIException('Invalid API Usage', APIException::INVALID_API_USAGE);
+		}
+
+		$this->ensure($post, 'email');
+
+		$user->email = trim(strip_tags($post['email']));
+
+		$users = new Users($site->db);
+		$users->update($user);
+
+		$json = new JsonAPI();
+		$json->addData('user', $user->id, $user->data());
+		return $json;
 	}
 
 	private function preference(Site $site, Server $server, $params, $time) {
@@ -113,7 +136,6 @@ class ApiUsers extends \CL\Users\Api\Resource {
 		// This will fail with an exception if not able to login
 		$user = $auth->login($site, $server);
 		$site->users->user = $user;
-
 		//
 		// Create the session cookie
 		//

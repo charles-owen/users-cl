@@ -48,7 +48,7 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 * user | User | The authenticated user
 	 * permission | array | The permissions mapping array
 	 *
-	 * @return null|string
+	 * @return mixed
 	 */
 	public function __get($property) {
 		switch($property) {
@@ -104,10 +104,10 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 * Manually add a user.
 	 *
 	 * Generally only used during system startup.
-	 * @param $userid The user ID
-	 * @param $name User name
-	 * @param $role User role
-	 * @param $password Hashed password created by password_hash($password, PASSWORD_DEFAULT)
+	 * @param string $userid The user ID
+	 * @param string $name User name
+	 * @param string $role User role
+	 * @param string $password Hashed password created by password_hash($password, PASSWORD_DEFAULT)
 	 */
 	public function addUser($userid, $name, $role, $password=null) {
 		$this->users[$userid] = ['user'=>$userid, 'name'=>$name, 'role'=>$role, 'password'=>$password];
@@ -115,12 +115,12 @@ class UsersPlugin extends \CL\Site\Plugin  {
 
 	/**
 	 * Get a manually added user
-	 * @param $userid The user ID
+	 * @param string $userId The user ID
 	 * @return array|null Array of user information if user is a manually added user.
 	 */
-	public function getUser($userid) {
-		if(isset($this->users[$userid])) {
-			return $this->users[$userid];
+	public function getUser($userId) {
+		if(isset($this->users[$userId])) {
+			return $this->users[$userId];
 		}
 
 		return null;

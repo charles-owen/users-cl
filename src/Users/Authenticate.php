@@ -75,13 +75,22 @@ class Authenticate {
 				} else {
 					// A zero ID users is special since it is not
 					// in the database. This is normally only used
-					// during site startup.
+					// during site startup. First, we see if this is
+					// a manually dded user. If not we create a user
 					$u = $site->users->getUser($decoded->data->user);
-					if($u !== null) {
-						$user = new User(['id'=>0,
-							'user'=>$u['user'],
-							'name'=>$u['name'],
-							'role'=>$u['role']]);
+					if($u === null) {
+						if(!empty($u['name'])) {
+							$user = new User(['id'=>0,
+								'user'=>$u['user'],
+								'name'=>$u['name'],
+								'role'=>$u['role']]);
+						} else {
+							$user = new User(['id'=>0,
+								'user'=>$u['user'],
+								'name'=>'Guest',
+								'role'=>User::GUEST]);
+						}
+
 						$user->setFromJWT($decoded);
 					}
 				}
@@ -164,7 +173,7 @@ class Authenticate {
 
 		$username = $this->getUserId($post);
 		if($username === null) {
-			throw new APIException('Unable to login:<br>Invalid authentication credentials');
+			throw new APIException('Unable to login: Invalid authentication credentials');
 		}
 
 		$password = $post['password'];
@@ -191,7 +200,7 @@ class Authenticate {
 				if(!$bypass) {
 					// Validate the password
 					if($u['password'] === null || !password_verify($password, $u['password'])) {
-						throw new APIException('Unable to login:<br>Invalid authentication credentials');
+						throw new APIException('Unable to login: Invalid authentication credentials');
 					}
 				}
 
@@ -203,7 +212,7 @@ class Authenticate {
 		}
 
 		if($user === null) {
-			throw new APIException('Unable to login:<br>Invalid authentication credentials');
+			throw new APIException('Unable to login: Invalid authentication credentials');
 		}
 
 		return $user;

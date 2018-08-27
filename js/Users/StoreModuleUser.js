@@ -13,8 +13,12 @@ export let StoreModuleUser = {
         user: null
     },
     mutations: {
-        set(state, json) {
-            state.user = new User(json);
+        set(state, user) {
+            if(user instanceof User) {
+                state.user = user;
+            } else {
+	            state.user = new User(user);
+            }
         }
     }
 }

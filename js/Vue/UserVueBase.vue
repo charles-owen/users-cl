@@ -12,10 +12,10 @@ this.root
 
     export default {
         'extends': PageVueBase,
-        data: function() {
-            return {
-                user: this.$store.state.user.user
-            }
+        computed: {
+        	user() {
+        		return  this.$store.state.user.user
+          }
         }
     }
 </script>
