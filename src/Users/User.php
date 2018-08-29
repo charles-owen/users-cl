@@ -43,25 +43,29 @@ class User implements MetaDataOwner {
 	/** Constructor
      * @param array $row Array of contents of the row in the table for this user
 	 */
-	public function __construct($row = null) {
+	public function __construct($row = null, $prefix='') {
 		if($row !== null) {
 			if(isset($row['user_id'])) {
+				$prefix = 'user_';
+			}
+
+			if(isset($row[$prefix . 'id'])) {
 				// Required values
-				$this->id = +$row['user_id'];
+				$this->id = +$row[$prefix . 'id'];
 
 				// Optional values
-				$this->userId = $this->notEmptyOrNull($row, 'user_user');
-				$this->email = $this->notEmptyOrNull($row, 'user_email');
-				$this->name = $this->getOrDefault($row, 'user_name', '');
-				$this->role = $this->getOrDefault($row, 'user_role', User::GUEST);
+				$this->userId = $this->notEmptyOrNull($row, $prefix . 'user');
+				$this->email = $this->notEmptyOrNull($row, $prefix . 'email');
+				$this->name = $this->getOrDefault($row, $prefix . 'name', '');
+				$this->role = $this->getOrDefault($row, $prefix . 'role', User::GUEST);
 
-				if(isset($row['user_metadata'])) {
-					$this->metaData = new MetaData($this, $row['user_metadata']);
+				if(isset($row[$prefix . 'metadata'])) {
+					$this->metaData = new MetaData($this, $row[$prefix . 'metadata']);
 				}
 
-				$this->hasPassword = isset($row['user_password']) &&
-					$row['user_password'] !== null &&
-					strlen($row['user_password']) >= 16;
+				$this->hasPassword = isset($row[$prefix . 'password']) &&
+					$row[$prefix . 'password'] !== null &&
+					strlen($row[$prefix . 'password']) >= 16;
 			} else {
 				// Required values
 				$this->id = $this->getOrDefault($row, 'id', 0);
@@ -158,11 +162,12 @@ class User implements MetaDataOwner {
 				return $this->name;
 
 			case 'role':
-				if($this->member !== null) {
-					return $this->member->role;
-				}
+				return $this->role();
 
-				return $this->role;
+			case 'roleName':
+				$role = $this->role();
+				$roles = $this->getRoles();
+				return $roles[$role]['name'];
 
 			case 'staff':
 				return $this->atLeast(User::STAFF);
