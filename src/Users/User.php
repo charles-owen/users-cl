@@ -18,6 +18,7 @@ use \CL\Site\Site;
  * @property Membership member
  * @property MetaData meta
  * @property MetaData metaData
+ * @property string email
  * @endcond
  */
 class User implements MetaDataOwner {
