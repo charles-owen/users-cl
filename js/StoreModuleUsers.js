@@ -177,39 +177,33 @@ StoreModuleUsers.create = function(api, toId) {
                         Site.toast(this, error);
                     });
             },
-            get({commit, state}, payload) {
-                let id = +payload.id;
+            get({commit, state}, query) {
                 return new Promise((resolve, reject) => {
-                    // We may have the desired user loaded or we
-                    // may have to go get them.
-                    let prev = null;
-                    for(let i=0; i<state.users.length; i++) {
-                        let user = state.users[i];
-                        if(toId(user) === id) {
-                            if((i+1) < state.users.length) {
-                                user.next = state.users[i+1];
-                            }
-
-                            if(prev !== null) {
-                                user.prev = prev;
-                            }
-
-                            resolve(user);
-                            return;
-                        }
-
-                        prev = user;
-                    }
-                    for(let user of state.users) {
-
-                    }
+                    // // We may have the desired user loaded or we
+                    // // may have to go get them.
+                    // let prev = null;
+                    // for(let i=0; i<state.users.length; i++) {
+                    //     let user = state.users[i];
+                    //     if(toId(user) === id) {
+                    //         if((i+1) < state.users.length) {
+                    //             user.next = state.users[i+1];
+                    //         }
+                    //
+                    //         if(prev !== null) {
+                    //             user.prev = prev;
+                    //         }
+                    //
+                    //         resolve(user);
+                    //         return;
+                    //     }
+                    //
+                    //     prev = user;
+                    // }
 
                     // Go get the user
                     commit('fetchStart', true);
-                    const query = {
-                      id: id,
-                      prevnext: 1
-                    };
+                    query.prevnext = 1;
+
                     Site.api.get(api, query)
                         .then((response) => {
                             if(!response.hasError()) {
