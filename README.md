@@ -1,4 +1,4 @@
-# CourseLib Site team management component
+# CourseLib Site users management component
 
 
 
