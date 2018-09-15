@@ -409,6 +409,10 @@ class User implements MetaDataOwner {
 			return false;
 		}
 
+		if(!isset($roles[$this->role()])) {
+			return false;
+		}
+
 		return ($roles[$this->role()]['priority'] >= $roles[$atLeast]['priority']);
 	}
 
@@ -421,6 +425,10 @@ class User implements MetaDataOwner {
 	public function roleAtLeast($role, $atLeast) {
 		$roles = $this->getRoles();
 		if(!isset($roles[$atLeast])) {
+			return false;
+		}
+
+		if(!isset($roles[$role])) {
 			return false;
 		}
 
