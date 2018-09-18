@@ -57,8 +57,9 @@ class Authenticate {
 		//
 		$cookiename = $site->cookiePrefix . User::COOKIENAME;
 		if(!empty($server->cookie[$cookiename])) {
+			$cookie = $server->cookie[$cookiename];
 			try {
-				$decoded = JWT::decode($server->cookie[$cookiename], $site->users->publicKey, ["RS256"]);
+				$decoded = JWT::decode($cookie, $site->users->publicKey, ["RS256"]);
 			} catch(\Exception $exception) {
 				/// JWT was not valid...
 				$decoded = null;
@@ -73,10 +74,10 @@ class Authenticate {
 						$user->setFromJWT($decoded);
 					}
 				} else {
-					// A zero ID users is special since it is not
+					// A zero ID user is special since it is not
 					// in the database. This is normally only used
 					// during site startup. First, we see if this is
-					// a manually dded user. If not we create a user
+					// a manually added user. If not we create a user.
 					$u = $site->users->getUser($decoded->data->user);
 					if($u === null) {
 						if(!empty($u['name'])) {
@@ -99,7 +100,6 @@ class Authenticate {
 					// Renew JWT if older than the renewal period.
 					if(($time - $decoded->iat) > User::JWT_RENEWAL) {
 						$jwt = $user->createJWT($site, $time);
-						$cookiename = $site->cookiePrefix . User::COOKIENAME;
 						$server->setcookie($cookiename, $jwt, 0, "/");
 					}
 

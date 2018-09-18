@@ -42,6 +42,7 @@ class User implements MetaDataOwner {
 
 	/** Constructor
      * @param array $row Array of contents of the row in the table for this user
+	 * @param string $prefix Optional prefix on column names from the table
 	 */
 	public function __construct($row = null, $prefix='') {
 		if($row !== null) {
