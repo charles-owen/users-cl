@@ -1,7 +1,7 @@
 {
-  "name" : "cl/users",
+  "name": "cl/users",
   "description": "CourseLib website users component.",
-  "type" : "library",
+  "type": "library",
   "license": "MIT",
   "authors": [
     {
