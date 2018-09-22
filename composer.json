@@ -23,6 +23,11 @@
       "type": "vcs",
       "url": "https://github.com/charles-owen/users-cl.git"
     }
-  ]
+  ],
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.0.x-dev"
+    }
+  }
 }
 
