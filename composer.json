@@ -16,7 +16,7 @@
   },
   "require": {
     "firebase/php-jwt": "^5.0",
-    "cl/site/": "^2.0"
+    "cl/site": "^2.0"
   },
   "repositories": [
     {
