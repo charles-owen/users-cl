@@ -92,7 +92,7 @@ COMMENT;
 \$private = <<<KEY
 {$privKey}KEY;
 
-\$site-> users->setKeys(\$public, \$private);
+\$site->users->setKeys(\$public, \$private);
 
 PHP;
 
