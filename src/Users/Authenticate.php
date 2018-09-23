@@ -111,10 +111,10 @@ class Authenticate {
 		//
 		// Cookie-based automatic login support
 		//
-		$cookiename = $site->cookiePrefix . Autologin::COOKIENAME;
-		if(!empty($server->cookie[$cookiename])) {
+		$cookieALname = $site->cookiePrefix . Autologin::COOKIENAME;
+		if(!empty($server->cookie[$cookieALname])) {
 			// Attempt to validate
-			$cred = explode(":", $server->cookie[$cookiename]);
+			$cred = explode(":", $server->cookie[$cookieALname]);
 			$autologin = new Autologin($site->db);
 			$user = $autologin->validate($cred[0], $cred[1], $time);
 
@@ -123,14 +123,18 @@ class Authenticate {
 
 			if($user === null) {
 				// Cookie is invalid, remove it
-				$server->deleteCookie($cookiename);
+				$server->deleteCookie($cookieALname);
 			} else {
 				// Cookie valid, create a new cookie for the next login
 				$cred = $autologin->create($user->id, $time, $user->dataJWT);
 
-				$server->setcookie($cookiename,
+				$server->setcookie($cookieALname,
 					$cred['id'] . ':' . $cred['token'],
 					$time + 86400 * Autologin::PERIOD, "/");
+
+				// And create a new cookie to represent that we are logged in
+				$jwt = $user->createJWT($site, $time);
+				$server->setcookie($cookiename, $jwt, 0, "/");
 
 				// Successful cookie-based login
 				return $user;
