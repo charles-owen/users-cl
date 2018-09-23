@@ -1,1 +1,2 @@
 FIXME: Why is the autologin table so huge?
+FUTURE: Install automatically generates public/private key pair if none exists in site.php

@@ -79,7 +79,7 @@ class Authenticate {
 					// during site startup. First, we see if this is
 					// a manually added user. If not we create a user.
 					$u = $site->users->getUser($decoded->data->user);
-					if($u === null) {
+					if($u !== null) {
 						if(!empty($u['name'])) {
 							$user = new User(['id'=>0,
 								'user'=>$u['user'],
