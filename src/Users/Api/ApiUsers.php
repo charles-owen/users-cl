@@ -130,7 +130,11 @@ class ApiUsers extends \CL\Users\Api\Resource {
 	private function login(Site $site, Server $server, $time) {
 		$auth = $site->users->auth;
 		if($auth === null) {
-			throw new APIException("Site not configured for login");
+			throw new APIException("Site not configured for login. No installed authentication.");
+		}
+
+		if($site->users->publicKey === null || $site->users->privateKey === null) {
+			throw new APIException("Site not configured for login. No set public/private key pair.");
 		}
 
 		// This will fail with an exception if not able to login

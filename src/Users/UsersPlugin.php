@@ -194,6 +194,11 @@ class UsersPlugin extends \CL\Site\Plugin  {
 			return null;
 		}
 
+		// Default authentication if none installed
+		if($site->users->auth === null) {
+			$site ->users->auth = new Authenticate();
+		}
+
 		// Can we authenticate?
 		if($site->users->auth !== null) {
 			$site->users->user = $site->users->auth->authenticate($site, $server, $time);

@@ -4,4 +4,4 @@
  * Used by the site installer
  */
 
-return new CL\Site\Install\Package('\CL\Users\UsersPlugin', '/dist');
+return new CL\Users\Install\UsersPackage('\CL\Users\UsersPlugin', '/dist');
