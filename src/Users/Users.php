@@ -280,7 +280,7 @@ SQL;
 	/**
 	 * Update a user in the database
 	 * @param User $user User to add
-	 * @returns array with keys:
+	 * @return array with keys:
 	 *     ok: true if successfully inserted
 	 *     id: The id if successfully added to database
 	 *     duplicate: Field that violated unique constraint

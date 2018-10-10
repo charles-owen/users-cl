@@ -3,10 +3,7 @@
     <div class="full">
 
       <div v-if="fetcher.fetched">
-        <p v-if="management" class="center">
-          <router-link :to="root + '/cl/console/management/user/new'" tag="button">Add User</router-link>
-        </p>
-        <table v-if="users.length > 0">
+        <table v-if="users.length > 0" class="small">
           <tr>
             <th scope="col">&nbsp;</th>
             <th scope="col">User</th>
@@ -44,7 +41,6 @@
 
 <script>
     import Dialog from 'dialog-cl';
-   // import {mapState} from 'vuex';
     import FetcherVue from '../Lib/FetcherVue.vue';
 
     const mapState = Site.Vuex.mapState;
@@ -75,7 +71,7 @@
                     });
             },
             presentUser: function(user) {
-                let content = `<div class="cl-users-editor-dlg">
+                let content = `<div class="cl-dialog">
 <div class="tabular">
 <p><span class="label">User ID: </span><span>${user.userId}</span></p>
 <p><span class="label">Name: </span><span>${user.name}</span></p>
@@ -94,55 +90,21 @@
 
         }),
         mounted() {
-            this.$parent.setTitle(': Users');
-            this.$store.dispatch('users/fetch');
+          this.$parent.setTitle(': Users');
+          this.$store.dispatch('users/fetch');
+
+	        // Add the 'Add Member' option to the the nav2 navigation bar
+	        if(this.management) {
+		        this.addComponent = Site.Console.components.addNav2Link(this, 'Add User', 5, () => {
+			        this.$router.push(Site.root + '/cl/console/management/user/new');
+		        });
+	        }
+        },
+        beforeDestroy() {
+          this.$site.console.components.removeNav2(this, this.addComponent);
         },
         components: {
             'fetcher': FetcherVue
         }
     }
 </script>
-
-// Notice: Not scoped!
-<style lang="scss">
-div.cl-users-editor {
-
-  table {
-    font-size: 0.9em;
-    margin-top: 1.2em;
-    margin-bottom: 1.2em;
-  }
-
-  td:first-child {
-    text-align: center;
-  }
-}
-
-div.cl-users-editor-dlg {
-  padding: 1em;
-
-  div.tabular {
-    display: table;
-    margin: 0 auto;
-
-    p {
-      display: table-row;
-
-      span:first-child {
-        padding-right: 1em;
-        font-style: italic;
-        text-align: right;
-      }
-
-      span {
-        display: table-cell;
-      }
-    }
-
-
-  }
-
-
-}
-
-</style>

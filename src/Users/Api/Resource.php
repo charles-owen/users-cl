@@ -103,6 +103,12 @@ abstract class Resource extends \CL\Site\Api\Resource {
 		}
 
 		$post = $server->post;
+		if(!empty($post['clean']) && $post['clean'] === 'yes') {
+			$json = new JsonAPI();
+			$json->addData('table-clean', 0, $maker->clean());
+			return $json;
+		}
+
 		if(!isset($post['drop'])) {
 			throw new APIException("Invalid API Usage", APIException::INVALID_API_USAGE);
 		}

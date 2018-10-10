@@ -20,6 +20,7 @@ class Autologin extends \CL\Tables\Table {
 
 	/// Days we keep logged in
 	const PERIOD = 30;
+
 	/**
 	 * Constructor
 	 * @param \CL\Tables\Config $config The Database configuration object
@@ -147,9 +148,66 @@ SQL;
 	}
 
 	/**
+	 * Table cleaning. Removes expired autologin records and any orphaned autologin
+	 * returns (no current user).
+	 * @return string Text result of cleaning of null if not implemented.
+	 */
+	public function clean($time=null) {
+		$users = new Users($this->config);
+
+		$result = '';
+
+		if($time === null) {
+			$time = time();
+		}
+
+		$time -= self::PERIOD * 86400;
+
+		$pdo = $this->pdo();
+		$sql = <<<SQL
+delete from $this->tablename
+where created<?
+SQL;
+
+		$stmt = $pdo->prepare($sql);
+		if($stmt->execute([$this->timeStr($time)]) === false) {
+			return "Error accessing autologin table\n";
+		}
+
+		$cnt = $stmt->rowCount();
+		if($cnt > 0) {
+			$result .= "Removed $cnt expired autologin records\n";
+		} else {
+			$result .= "No expired autologin records\n";
+		}
+
+		$sql = <<<SQL
+delete from $this->tablename
+where userid not in (
+	select id
+	from $users->tablename
+)
+SQL;
+
+		$stmt = $pdo->prepare($sql);
+		if($stmt->execute([]) === false) {
+			return "Error accessing autologin table\n";
+		}
+
+		$cnt = $stmt->rowCount();
+		if($cnt > 0) {
+			$result .= "Removed $cnt orphaned autologin records\n";
+		} else {
+			$result .= "No orphaned autologin records\n";
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Generate a random string of characters to use as an ID or token or salt
 	 * @param int $len Length to generate, default is 32
-	 * @returns string Validator
+	 * @return string Validator
 	 */
 	public static function createToken($len = 32) {
 		$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
