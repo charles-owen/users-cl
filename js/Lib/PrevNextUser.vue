@@ -17,7 +17,7 @@
               let link = this.link;
 
               if(user !== null && user.prev !== undefined) {
-                  this.$set(Site.Console.components, 'nav2left', {
+                  this.$set(this.$site.console.components, 'nav2left', {
                       template: `<router-link title="Previous User" :to="link + user.prev.id"><img :src="icon" alt="Previous User"></router-link>`,
                       data: function() {
                           return {
@@ -28,11 +28,11 @@
                       }
                   });
               } else {
-                  this.$set(Site.Console.components, 'nav2left', null);
+                  this.$set(this.$site.console.components, 'nav2left', null);
               }
 
               if(user !== null && user.next !== undefined) {
-                  this.$set(Site.Console.components, 'nav2right', {
+                  this.$set(this.$site.console.components, 'nav2right', {
                       template: `<router-link title="Next User" :to="link + user.next.id"><img :src="icon" alt="Next User"></router-link>`,
                       data: function() {
                           return {
@@ -43,7 +43,7 @@
                       }
                   });
               } else {
-                  this.$set(Site.Console.components, 'nav2right', null);
+                  this.$set(this.$site.console.components, 'nav2right', null);
               }
           }
       },
@@ -59,8 +59,8 @@
           }
       },
       beforeDestroy() {
-          this.$set(Site.Console.components, 'nav2left', null);
-          this.$set(Site.Console.components, 'nav2right', null);
+          this.$set(this.$site.console.components, 'nav2left', null);
+          this.$set(this.$site.console.components, 'nav2right', null);
       }
   }
 </script>

@@ -6,7 +6,9 @@
 import UsersEditorComponent from './UsersEditorComponent.vue';
 import UserEditorComponent from './UserEditorComponent.vue';
 
-export let UsersConsole = function(site, Console) {
+export let UsersConsole = function(site) {
+    const Console = site.console;
+
     Console.tables.add({
         title: 'Users',
         order: 1,

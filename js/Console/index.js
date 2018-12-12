@@ -5,4 +5,4 @@
 
 import {UsersConsole} from './UsersConsole';
 
-new UsersConsole(Site.Site, Site.Console);
+new UsersConsole(Site.Site);
