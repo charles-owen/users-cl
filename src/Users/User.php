@@ -15,10 +15,19 @@ use \CL\Site\Site;
  * Class that defines a site user
  *
  * @cond
+ * @property array dataJWT
+ * @property string displayName
+ * @property string email
+ * @property string id
  * @property Membership member
  * @property MetaData meta
  * @property MetaData metaData
- * @property string email
+ * @property string name
+ * @property boolean guest
+ * @property boolean hasPassword
+ * @property string role
+ * @property boolean staff
+ * @property string userId
  * @endcond
  */
 class User implements MetaDataOwner {
