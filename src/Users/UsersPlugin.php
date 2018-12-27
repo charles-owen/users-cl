@@ -237,24 +237,29 @@ class UsersPlugin extends \CL\Site\Plugin  {
 		//   'at-least' => User::STAFF
 		//   'at-least' => ['configurable-permission-tag', default permission]
 		//
-		if(isset($site->options['at-least'])) {
-			$option = $site->options['at-least'];
-			if(is_array($option)) {
-				$atLeast = $users->atLeast($option[0], $option[1]);
-			} else {
-				$atLeast = $option;
-			}
-
-			if($site->users->user === null || !$site->users->user->atLeast($atLeast)) {
-				if(isset($site->options['resource'])) {
-					$message = $site->options['resource'];
+		// Also accept 'atLeast'
+		//
+		foreach(['atLeast', 'at-least'] as $tag) {
+			if(isset($site->options[$tag])) {
+				$option = $site->options[$tag];
+				if(is_array($option)) {
+					$atLeast = $users->atLeast($option[0], $option[1]);
 				} else {
-					$message = 'selected page';
+					$atLeast = $option;
 				}
 
-				return $site->root . '/cl/notauthorized/' . urlencode($message);
+				if($site->users->user === null || !$site->users->user->atLeast($atLeast)) {
+					if(isset($site->options['resource'])) {
+						$message = $site->options['resource'];
+					} else {
+						$message = 'selected page';
+					}
+
+					return $site->root . '/cl/notauthorized/' . urlencode($message);
+				}
 			}
 		}
+
 
 		return null;
 	}
