@@ -18,9 +18,7 @@
 </template>
 
 <script>
-    let Vue = Site.Vue;
-
-    let router = new Site.VueRouter({
+    let router = new Site.Site.VueRouter({
         mode: 'history',
         routes: []
     });
@@ -39,7 +37,7 @@
         },
         props: ['json'],
         created: function() {
-            Site.api.post('/api/users/logout', {})
+            this.$site.api.post('/api/users/logout', {})
                 .then((response) => {
                 })
                 .catch((error) => {
@@ -48,22 +46,22 @@
         mounted: function() {
             this.redirect = this.$route.query.u;
             if(this.redirect === undefined || this.redirect === null) {
-                this.redirect = Site.root + '/';
+                this.redirect = this.$site.root + '/';
             }
         },
         methods: {
             submit() {
-                Site.api.post('/api/users/login', this.credentials)
+                this.$site.api.post('/api/users/login', this.credentials)
                     .then((response) => {
                       if(response.hasError()) {
-                          Site.toast(this, response);
+	                      this.$site.toast(this, response);
                       } else {
                           window.location = this.redirect;
                       }
 
                     })
                     .catch((error) => {
-                        Site.toast(this, error);
+	                    this.$site.toast(this, error);
                     });
             }
         }
