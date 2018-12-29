@@ -6,6 +6,8 @@
 
 namespace CL\Users;
 
+use Exception;
+
 /**
  * Hash-based selector for assignments or other persistent selections.
  *
@@ -18,12 +20,14 @@ namespace CL\Users;
  * specific to a user and salt.
  */
 class Selector {
+	/// Padding to be added to user ID when hashing
 	const PADDING = "jczeKwnoz1nTED2frf2P";
 
 	/**
 	 * Selector constructor.
 	 * @param $user
 	 * @param $salt
+	 * @throws Exception
 	 */
 	public function __construct($user, $salt) {
 		$this->initial_seed = self::get_int($user, $salt, 0, 2147483648);
@@ -32,7 +36,7 @@ class Selector {
 
 	/**
 	 * Set a seed, reseting the generator to some starting point
-	 * @param $seed Seed to set
+	 * @param int $seed Seed to set
 	 */
 	public function set_seed($seed) {
 		$this->seed = $seed;
@@ -41,14 +45,15 @@ class Selector {
 
 	/**
 	 * Get the initial seed for this random sequence.
-	 * @return Initial random seed
+	 * @return int Initial random seed
 	 */
 	public function get_seed() {
 		return $this->initial_seed;
 	}
 
 	/**
-	 * @return int New random number in the the range 0 to 2147483647
+	 * Get a random value in the range 0 to 2147483647
+	 * @return int New random number
 	 */
 	public function get_rand() {
 		$this->seed = fmod(33797 * $this->seed + 1, 2147483648);
@@ -60,7 +65,7 @@ class Selector {
 	 * @param mixed $user User object or string containing user (or team) ID
 	 * @param string $salt Assignment specific selection string
 	 * @return float 0 <= result < 1
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function get_float($user, $salt) {
 		if(is_a($user, "\CL\Users\User")) {
@@ -68,7 +73,7 @@ class Selector {
 		} else if(is_string($user)) {
 			$userId = $user;
 		} else {
-			throw new \Exception("Invalid argument type");
+			throw new Exception("Invalid argument type");
 		}
 
 		$h = hash("sha256", $userId . self::PADDING . $salt);
@@ -84,7 +89,7 @@ class Selector {
 	 * @param int $min Minimum possible integer value
 	 * @param int $max Maximum possible integer value
 	 * @return float Random number
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function get_int($user, $salt, $min, $max) {
 		$f = self::get_float($user, $salt);
@@ -103,12 +108,12 @@ class Selector {
 	   $sel = \User\Selector::get_one($user, "step1-quiz2", "a", "b", "c", "d", "e", "f", "g");
 	 * \endcode
 	 * @return mixed Item from the options to select.
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function get_one() {
 		$num = func_num_args();
 		if($num < 3) {
-			throw new \Exception("Missing function arguments");
+			throw new Exception("Missing function arguments");
 		}
 
 		$args = func_get_args();
