@@ -11,7 +11,7 @@ export let UsersConsole = function(site) {
 
     Console.tables.add({
         title: 'Users',
-        order: 1,
+        order: 10,
         api: '/api/users/tables'
     });
 
