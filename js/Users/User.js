@@ -142,21 +142,41 @@ User.prototype.displayName = function() {
     return first + ' ' + last;
 }
 
+
 User.prototype.userRoleName = function() {
     const roles = this.getUserRoles();
     let role = this.userRole();
     let r = roles[role];
-    if(r !== undefined) {
-	    return roles[role].name;
-    }
+	if(r === undefined) {
+		return 'Invalid';
+	}
 
-    return 'Invalid';
+	if(short === true && r.short !== undefined) {
+		return r.short;
+	}
+
+    return r.name;
 }
 
-User.prototype.roleName = function() {
+
+/**
+ * Return the role name for this user.
+ * @param short If set to true, a short version is supplied if available.
+ * @returns string
+ */
+User.prototype.roleName = function(short) {
     const roles = this.getRoles();
     let role = this.role();
-    return roles[role].name;
+	let r = roles[role];
+	if(r === undefined) {
+	    return 'Invalid';
+    }
+
+	if(short === true && r.short !== undefined) {
+		return r.short;
+	}
+
+	return r.name;
 }
 
 User.compare = function(a, b) {

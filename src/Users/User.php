@@ -204,6 +204,13 @@ class User implements MetaDataOwner {
 	 * @return string Role
 	 */
     public function role() {
+    	//
+	    // An admin user is automatically admin in all cases
+	    //
+	    if($this->role === self::ADMIN) {
+	    	return self::ADMIN;
+	    }
+
 	    if($this->member !== null) {
 		    return $this->member->role;
 	    }
