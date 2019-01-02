@@ -143,7 +143,7 @@ User.prototype.displayName = function() {
 }
 
 
-User.prototype.userRoleName = function() {
+User.prototype.userRoleName = function(short) {
     const roles = this.getUserRoles();
     let role = this.userRole();
     let r = roles[role];

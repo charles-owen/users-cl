@@ -8,7 +8,7 @@ use CL\Users\User;
 use CL\Site\MetaData;
 
 
-class UserTest extends \PHPUnit_Framework_TestCase
+class UserTest extends \PHPUnit\Framework\TestCase
 {
 	public function test() {
 		$user = new User();

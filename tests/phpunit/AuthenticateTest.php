@@ -54,15 +54,15 @@ class AuthenticateTest extends UsersDatabaseTestBase {
 		// Create a cookie for $user1
 		$autologin = new AutoLogin($this->site->db);
 		$cookiename = $this->site->cookiePrefix . Autologin::COOKIENAME;
-		$cred = $autologin->create($user1->id, $time);
+		$cred = $autologin->create($user1->id, $time, []);
 
 		$server->setcookie($cookiename,
 			$cred['id'] . ':' . $cred['token'],
 			time() + 86400 * Autologin::PERIOD, "/");
 
+		$user1->dataJWT = ['id'=>$user1->id];
 		// Try to cookie authenticate
 		$this->assertEquals($user1, $auth->authenticate($this->site, $server,  $time));
-
 	}
 
 

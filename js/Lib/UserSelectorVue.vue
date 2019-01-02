@@ -1,9 +1,3 @@
-<!--
-/**
- * @file
- * Simple component for selecting a user in the system.
- */
--->
 <template>
   <span>
     <div class="cl-input"><input v-model="query" type="text" maxlength="150">
@@ -27,6 +21,10 @@
 
   const LIMIT = 20;
 
+  /**
+   * Simple component for selecting a user in the system.
+   * @constructor UserSelectorVue
+   */
     export default {
         props: [
             'selected'
@@ -64,8 +62,6 @@
         },
         methods: {
             fetch(query) {
-                console.log('fetch');
-                console.log(query);
                 if(this.timer !== null) {
                     clearTimeout(this.timer);
                     this.timer = null;

@@ -272,7 +272,7 @@ SQL;
 			return ['ok'=>false];
 		}
 
-        $id = $pdo->lastInsertId();
+        $id = +$pdo->lastInsertId();
 		$user->id = $id;
 		return ['ok'=>true, 'id'=> $id];
 	}

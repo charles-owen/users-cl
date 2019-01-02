@@ -8,8 +8,8 @@ import {StoreModuleUser} from './StoreModuleUser';
 import {StoreModuleUsers} from '../StoreModuleUsers';
 import {Permissions} from './Permissions';
 
-let UsersFactory = function() {}
-console.log("UsersFactory loaded");
+export const UsersFactory = function() {}
+
 /**
  * Factory method to create a Users object.
  *
@@ -60,8 +60,8 @@ UsersFactory.create = function(site) {
 	    }
     });
 
+    site.User = User;
+    site.StoreModuleUsers = StoreModuleUsers;
+
     return Users;
 }
-
-export {UsersFactory};
-
