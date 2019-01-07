@@ -29,35 +29,82 @@ class Selector {
 	 * @param $salt
 	 * @throws Exception
 	 */
-	public function __construct($user, $salt) {
-		$this->initial_seed = self::get_int($user, $salt, 0, 2147483648);
-		$this->seed = $this->initial_seed;
+	public function __construct(User $user, $salt) {
+		$this->user = $user;
+		$this->salt = $salt;
+
+		$userId = $user->userId;
+		$h = hash("sha256", self::PADDING . $userId . $this->salt);
+		$h1 = hexdec(substr($h, 8, 8));
+		$this->seed = $h1 & 2147483647;
+		$this->initial_seed = $this->seed;
 	}
 
 	/**
-	 * Set a seed, reseting the generator to some starting point
-	 * @param int $seed Seed to set
+	 * Property get magic method
+	 *
+	 * <b>Properties</b>
+	 * Property | Type | Description
+	 * -------- | ---- | -----------
+	 *
+	 * @param string $property Property name
+	 * @return mixed
 	 */
-	public function set_seed($seed) {
-		$this->seed = $seed;
-		$this->initial_seed = $seed;
+	public function __get($property) {
+		switch($property) {
+			case 'seed':
+				return $this->initial_seed;
+
+			default:
+				$trace = debug_backtrace();
+				trigger_error(
+					'Undefined property ' . $property .
+					' in ' . $trace[0]['file'] .
+					' on line ' . $trace[0]['line'],
+					E_USER_NOTICE);
+				return null;
+		}
 	}
 
 	/**
-	 * Get the initial seed for this random sequence.
-	 * @return int Initial random seed
+	 * Property set magic method
+	 *
+	 * <b>Properties</b>
+	 * Property | Type | Description
+	 * -------- | ---- | -----------
+	 *
+	 * @param string $property Property name
+	 * @param mixed $value Value to set
 	 */
-	public function get_seed() {
-		return $this->initial_seed;
+	public function __set($property, $value) {
+		switch($property) {
+			case 'seed':
+				$this->seed = $value;
+				$this->initial_seed = $value;
+				break;
+
+			default:
+				$trace = debug_backtrace();
+				trigger_error(
+					'Undefined property ' . $property .
+					' in ' . $trace[0]['file'] .
+					' on line ' . $trace[0]['line'],
+					E_USER_NOTICE);
+				break;
+		}
 	}
+
 
 	/**
 	 * Get a random value in the range 0 to 2147483647
 	 * @return int New random number
 	 */
 	public function get_rand() {
-		$this->seed = fmod(33797 * $this->seed + 1, 2147483648);
-		return (int)$this->seed;
+		$h = hash("sha256", self::PADDING . $this->seed . $this->salt);
+		$h1 = hexdec(substr($h, 8, 8));
+		$this->seed = $h1 & 2147483647;
+
+		return $this->seed;
 	}
 
 	/**
@@ -123,6 +170,8 @@ class Selector {
 		return $args[\intval($s) + 2];
 	}
 
-	private $seed;                ///< Current seed value
-	private $initial_seed;         ///< The initial seed value as set
+	private $user;          // The user
+	private $salt;
+	private $seed;          // Current seed value
+	private $initial_seed;  // The initial seed value as set
 }
