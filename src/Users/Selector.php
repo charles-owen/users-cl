@@ -27,7 +27,6 @@ class Selector {
 	 * Selector constructor.
 	 * @param $user
 	 * @param $salt
-	 * @throws Exception
 	 */
 	public function __construct(User $user, $salt) {
 		$this->user = $user;
