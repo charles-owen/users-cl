@@ -93,6 +93,11 @@ class Authenticate {
 						}
 
 						$user->setFromJWT($decoded);
+					} else {
+						$user = new User(['id'=>0,
+							'user'=>$decoded->data->user,
+							'name'=>'Guest',
+							'role'=>User::GUEST]);
 					}
 				}
 
