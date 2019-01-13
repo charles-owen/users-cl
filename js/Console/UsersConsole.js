@@ -5,6 +5,8 @@
 
 import UsersEditorComponent from './UsersEditorComponent.vue';
 import UserEditorComponent from './UserEditorComponent.vue';
+import LogViewComponent from './LogViewComponent.vue';
+import {User} from '../Users/User';
 
 export let UsersConsole = function(site) {
     const Console = site.console;
@@ -40,6 +42,19 @@ export let UsersConsole = function(site) {
             {route: '/management/user/:id', name: 'user', component: UserEditorComponent, props: true}
         ]
     });
+
+	Console.components.addOption({
+		atLeast: {tag: 'site-log', default: User.ADMIN},
+		page: {title: 'Management', route: '/management', order: 10},
+		section: {title: 'Site Management', order: 1},
+		title: 'Logs',
+		order: 2,
+		route: '/management/logs',
+		routes: [
+			{route: '/management/logs', name: 'users', component: LogViewComponent}
+		]
+	});
+
 }
 
 

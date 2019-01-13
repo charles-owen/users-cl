@@ -140,6 +140,7 @@ class ApiUsers extends \CL\Users\Api\Resource {
 		// This will fail with an exception if not able to login
 		$user = $auth->login($site, $server);
 		$site->users->user = $user;
+
 		//
 		// Create the session cookie
 		//
@@ -158,6 +159,8 @@ class ApiUsers extends \CL\Users\Api\Resource {
 				$cred['id'] . ':' . $cred['token'],
 				time() + 86400 * Autologin::PERIOD, "/");
 		}
+
+		$site->users->logger->info("Logged in");
 
 		$json = new JsonAPI();
 		return $json;

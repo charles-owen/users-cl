@@ -168,7 +168,8 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 * @param Site $site The Site object
 	 */
 	public function install(Site $site) {
-		$this->site = $site;
+		parent::install($site);
+
 		$site->install("users", $this);
 
 		$site->addStartup(function(Site $site, Server $server, $time) {
@@ -295,8 +296,6 @@ class UsersPlugin extends \CL\Site\Plugin  {
 		$maker = new UserTables($site->db);
 		$maker->create(false);
 	}
-
-	private $site = null;   ///< The Site object
 
 	/// Users added manually to the system.
 	/// Generally only used for initial startup
