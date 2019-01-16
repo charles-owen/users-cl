@@ -51,7 +51,7 @@ export let UsersConsole = function(site) {
 		order: 2,
 		route: '/management/logs',
 		routes: [
-			{route: '/management/logs', name: 'users', component: LogViewComponent}
+			{route: '/management/logs', name: 'logs', component: LogViewComponent}
 		]
 	});
 
