@@ -75,11 +75,47 @@ class ApiUsers extends \CL\Users\Api\Resource {
 			case 'userupdate':
 				return $this->userUpdate($site, $server, $time);
 
+			case 'aboutme':
+				return $this->aboutMe($site, $server, $time);
+
 			case 'tables':
 				return $this->tables($site, $server, new UserTables($site->db));
 		}
 
 		throw new APIException("Invalid API Path", APIException::INVALID_API_PATH);
+	}
+
+	/**
+	 * Handle post from the About Me page (editing of preferences)
+	 * /api/user/aboutme
+	 * @param Site $site
+	 * @param Server $server
+	 * @param $time
+	 * @return JsonAPI
+	 * @throws APIException
+	 */
+	private function aboutMe(Site $site, Server $server, $time) {
+		$user = $this->isUser($site, User::USER);
+
+		$post = $server->post;
+		if($server->requestMethod !== 'POST') {
+			new APIException('Invalid API Usage', APIException::INVALID_API_USAGE);
+		}
+
+		foreach($site->users->preferences as $preference) {
+			$preference->submit($site, $user, $post, $time);
+		}
+
+		$users = new Users($site->db);
+		$users->update($user);
+		$users->writeMetaData($user);
+
+		$data = $site->users->preferencesData($site, $user);
+
+		$json = new JsonAPI();
+		$json->addData('user', $user->id, $user->data());
+		$json->addData('preferences-data', $user->id, $data);
+		return $json;
 	}
 
 	private function userUpdate(Site $site, Server $server, $time) {

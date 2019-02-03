@@ -297,8 +297,10 @@ class User implements MetaDataOwner {
 
 	/** Is $id the user ID for this user?
 	 * @param $id User ID to check
-	 * @returns TRUE if $id is the ID of this user */
-	public function isUser($id) {return $this->userId === $id;}
+	 * @return TRUE if $id is the ID of this user */
+	public function isUser($id) {
+		return $this->userId === $id;
+	}
 	
 
 	

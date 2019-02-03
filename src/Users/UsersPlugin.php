@@ -18,8 +18,10 @@ use CL\Console\ConsoleView;
  * @cond
  * @property User user
  * @property Authenticate auth
- * @property string publicKey
+ * @property array permissions
  * @property string privateKey
+ * @property string publicKey
+ * @property array preferences
  * @endcond
  */
 class UsersPlugin extends \CL\Site\Plugin  {
@@ -66,6 +68,9 @@ class UsersPlugin extends \CL\Site\Plugin  {
 
 			case 'permissions':
 				return $this->permissions;
+
+			case 'preferences':
+				return $this->preferences;
 
 			default:
 				return parent::__get($property);
@@ -130,7 +135,7 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 * For a tagged permission object, set the minimum permission.
 	 *
 	 * The tagged permission system allows tags to be set
-	 * that define the permissions necesary to use parts of the system.
+	 * that define the permissions necessary to use parts of the system.
 	 *
 	 * @param string $tag Tag specified for the permission item.
 	 * @param string $permission Minimum permission to set.
@@ -169,6 +174,10 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 */
 	public function install(Site $site) {
 		parent::install($site);
+
+		$this->preferenceAdd(new Preferences\PreferenceName());
+		$this->preferenceAdd(new Preferences\PreferenceUserId());
+		$this->preferenceAdd(new Preferences\PreferenceEmail());
 
 		$site->install("users", $this);
 
@@ -226,9 +235,6 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 * @return null|string redirect page.
 	 */
 	private function postStartup(Site $site, Server $server, $time) {
-		// Accese UsersConfig
-		$users = $site->users;
-
 		//
 		// Allow an at-least role to be specified for a page.
 		// If user does not meet that requirement, they are
@@ -244,12 +250,12 @@ class UsersPlugin extends \CL\Site\Plugin  {
 			if(isset($site->options[$tag])) {
 				$option = $site->options[$tag];
 				if(is_array($option)) {
-					$atLeast = $users->atLeast($option[0], $option[1]);
+					$atLeast = $this->atLeast($option[0], $option[1]);
 				} else {
 					$atLeast = $option;
 				}
 
-				if($site->users->user === null || !$site->users->user->atLeast($atLeast)) {
+				if($this->user === null || !$this->user->atLeast($atLeast)) {
 					if(isset($site->options['resource'])) {
 						$message = $site->options['resource'];
 					} else {
@@ -260,7 +266,6 @@ class UsersPlugin extends \CL\Site\Plugin  {
 				}
 			}
 		}
-
 
 		return null;
 	}
@@ -276,6 +281,11 @@ class UsersPlugin extends \CL\Site\Plugin  {
 			$router = $object;
 			$router->addRoute(['login'], function(Site $site, Server $server, array $params, array $properties, $time) {
 				$view = new LoginView($site);
+				return $view->vue();
+			});
+
+			$router->addRoute(['aboutme'], function(Site $site, Server $server, array $params, array $properties, $time) {
+				$view = new AboutMeView($site);
 				return $view->vue();
 			});
 
@@ -297,14 +307,75 @@ class UsersPlugin extends \CL\Site\Plugin  {
 		$maker->create(false);
 	}
 
-	/// Users added manually to the system.
-	/// Generally only used for initial startup
+	/**
+	 * Get a preference item by tag
+	 * @param string $tag Tag to search for
+	 * @return Preference|null The Preference object or null if not installed
+	 */
+	public function preferenceGet($tag) {
+		if(isset($this->preferences[$tag])) {
+			return $this->preferences[$tag];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Add a new preference that can be viewed or set on the AboutMe page
+	 * @param Preference $preference Preference to add
+	 */
+	public function preferenceAdd(Preference $preference) {
+		// Does it already exist? If so we use the order it had
+		// before.
+		if(isset($this->preferences[$preference->tag])) {
+			$preference->order = $this->preferences[$preference->tag]->order;
+		} else {
+			// Determine if the order is set
+			if($preference->order === null) {
+				// If not set, use one more than the highest order item seen so far
+				$this->maxPrefOrder++;
+				$preference->order = $this->maxPrefOrder;
+			} else {
+				if($preference->order > $this->maxPrefOrder) {
+					$this->maxPrefOrder = $preference->order;
+				}
+			}
+		}
+
+		$this->preferences[$preference->tag] = $preference;
+	}
+
+	/**
+	 * Create preference data suitable for sending to client systems.
+	 * @param Site $site The site object
+	 * @param User $user The user we are sending data for
+	 * @return array Data
+	 */
+	public function preferencesData(Site $site, User $user) {
+		$preferences = array_values($this->preferences);
+
+		usort($preferences, function($a, $b) {
+			return $a->order - $b->order;
+		});
+
+		$data = [];
+		foreach($preferences as $preference) {
+			$data[] = $preference->data($site, $user);
+		}
+		return $data;
+	}
+
+	// Users added manually to the system.
+	// Generally only used for initial startup
 	private $users = [];
 
-	private $user = null;   ///< Currently signed in user
-	private $auth = null;   ///< Authentication component
+	private $user = null;       // Currently signed in user
+	private $auth = null;       // Authentication component
 
-	private $permissions = [];  ///< Tagged permissions management
+	private $permissions = [];  // Tagged permissions management
+
+	private $preferences = [];  // User preferences by tag
+	private $maxPrefOrder = 0;  // Maximum value so far for any preference
 
 	private static $publicKey = null;
 	private static $privateKey = null;

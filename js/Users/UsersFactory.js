@@ -7,6 +7,7 @@ import {User} from './User';
 import {StoreModuleUser} from './StoreModuleUser';
 import {StoreModuleUsers} from '../StoreModuleUsers';
 import {Permissions} from './Permissions';
+import AboutMeVue from '../AboutMe/AboutMe.vue';
 
 export const UsersFactory = function() {}
 
@@ -58,6 +59,9 @@ UsersFactory.create = function(site) {
 	    if( (en = document.getElementById('cl-permissions')) !== null) {
 		    site.permissions = new Permissions(JSON.parse(en.textContent));
 	    }
+
+        site.PageVue.create('div.cl-users-aboutme', 'Example Vue', AboutMeVue, site.PageNav);
+
     });
 
     site.User = User;

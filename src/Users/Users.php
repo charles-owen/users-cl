@@ -10,6 +10,8 @@
 namespace CL\Users;
 
  
+use CL\Tables\TableException;
+
 /**
  * Model the collection of all users (the users table)
  */
@@ -149,7 +151,7 @@ SQL;
 	
 	/** Get a user
 	 * @param int $id The user id (internal table id)
-	 * @returns User object or null if it does not exist */
+	 * @return User object or null if it does not exist */
 	public function get($id) {
 		$sql = <<<SQL
 select * from $this->tablename where id=?
@@ -173,7 +175,7 @@ SQL;
 	/**
 	 * Get a user
 	 * @param string $user The user name or email address
-	 * @returns User object or null if it does not exist
+	 * @return User object or null if it does not exist
 	 */
 	public function getByUserOrEmail($user) {
 		$sql = <<<SQL
@@ -198,7 +200,7 @@ SQL;
 	/**
 	 * Get a user
 	 * @param string $user The user id
-	 * @returns User object or null if it does not exist
+	 * @return User object or null if it does not exist
 	 */
 	public function getByUser($user) {
 		$sql = <<<SQL
@@ -223,7 +225,7 @@ SQL;
 
     /** Create a guest user
      * @param $userId The User ID to use for this guest user
-     * @returns User object that is a guest */
+     * @return User object that is a guest */
     public function createGuestUser($userId) {
     	$row = [
     		'id' => 0,
@@ -315,9 +317,12 @@ SQL;
 		return ['ok'=>true, 'id'=> $user->id];
 	}
 
-	
-	/** Delete a user 
-	 * @param $id User ID */
+
+	/**
+	 * Delete a user
+	 * @param $id User ID
+	 * @return bool
+	 */
 	public function delete($id) {
 		$pdo = $this->pdo;
 		$sql = <<<SQL
@@ -384,17 +389,25 @@ SQL;
 	/**
 	 * Write the user meta-data to the table.
 	 * @param User $user The user to write the metadata for
+	 * @return true on success
 	 */
 	public function writeMetaData(User $user) {
-		$pdo = $this->pdo();
+		try {
+			$pdo = $this->pdo();
 
-		$sql = <<<SQL
+			$sql = <<<SQL
 update $this->tablename SET metadata=?
 where id=?
 SQL;
 
-		$stmt = $pdo->prepare($sql);
-		$stmt->execute([$user->metaData->json(), $user->id]);
+			$stmt = $pdo->prepare($sql);
+
+			$stmt->execute([$user->metaData->json(), $user->id]);
+		} catch(TableException $exception) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
