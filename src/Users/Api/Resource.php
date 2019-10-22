@@ -79,47 +79,4 @@ abstract class Resource extends \CL\Site\Api\Resource {
 
 	}
 
-	/**
-	 * The target for /tables API calls. Provides for the creation and optional dropping of tables.
-	 *
-	 * Since most subsystems have some tables, all that is needed is a tablemaker class
-	 * with each table specified in it and this dispatching in the API resource:
-	 *
-	 * \code
-	 * 			case 'tables':
-	 *              return $this->tables($site, $server, new UserTables($site->db));
-	 * \endcode
-	 *
-	 * @param Site $site The Site object
-	 * @param Server $server The Server object
-	 * @param TableMaker $maker A table maker object for a subsystem.
-	 * @return JsonAPI On success an empty message is returned.
-	 * @throws APIException Thrown if not authorized or there is a database error.
-	 */
-	protected function tables(Site $site, Server $server, TableMaker $maker) {
-		$user = $site->users->user;
-		if($user === null || !$user->atLeast(User::ADMIN)) {
-			throw new APIException("Not authorized", APIException::NOT_AUTHORIZED);
-		}
-
-		$post = $server->post;
-		if(!empty($post['clean']) && $post['clean'] === 'yes') {
-			$json = new JsonAPI();
-			$json->addData('table-clean', 0, $maker->clean());
-			return $json;
-		}
-
-		if(!isset($post['drop'])) {
-			throw new APIException("Invalid API Usage", APIException::INVALID_API_USAGE);
-		}
-
-		$drop = $post['drop'] === 'yes';
-
-		if(!$maker->create($drop)) {
-			throw new APIException("Table creation failed", APIException::UNABLE_TO_WRITE_DATABASE);
-		}
-
-		return new JsonAPI();
-	}
-
 }
