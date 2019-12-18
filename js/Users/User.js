@@ -179,6 +179,20 @@ User.prototype.roleName = function(short) {
 	return r.name;
 }
 
+User.prototype.roleToName = function(role, short) {
+    const roles = this.getRoles();
+    let r = roles[role];
+    if(r === undefined) {
+        return 'Invalid';
+    }
+
+    if(short === true && r.short !== undefined) {
+        return r.short;
+    }
+
+    return r.name;
+}
+
 User.compare = function(a, b) {
     let an = a.name.toLowerCase();
     let bn = b.name.toLowerCase();
