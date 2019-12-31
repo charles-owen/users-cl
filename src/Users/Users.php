@@ -52,6 +52,8 @@ SQL;
 	
 	/**
 	 * Get all users with options
+     * @param array $params Query parameters
+     * @return array Query results
 	 */
 	public function query($params = []) {
 		$where = new \CL\Tables\TableWhere($this);
@@ -137,14 +139,18 @@ SQL;
 			$where->append(null, intval($params['offset']), \PDO::PARAM_INT);
 		}
 
-		// echo $where->sub_sql($sql);
-		$result = $where->execute($sql);
-		$users = [];
-		foreach($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-			$users[] = new User($row);
-		}
+		try {
+            // echo $where->sub_sql($sql);
+            $result = $where->execute($sql);
+            $users = [];
+            foreach($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $users[] = new User($row);
+            }
 
-		return $users;
+            return $users;
+        } catch(TableException $e) {
+		    return [];
+        }
 	}
 	
 	
@@ -345,7 +351,7 @@ SQL;
 	public function setPassword($id, $password) {
 		$hash = password_hash($password, PASSWORD_DEFAULT);
 
-		$pdo = $this->pdo();
+		$pdo = $this->pdo;
 
 		$sql = <<<SQL
 update $this->tablename SET password=?
@@ -363,7 +369,6 @@ SQL;
 	 * @return User object if successful or NULL if not
 	 */
 	public function validatePassword($id, $password) {
-		$pdo = $this->pdo();
 
 		$sql = <<<SQL
 select *
@@ -371,17 +376,24 @@ from $this->tablename
 where user=? or email=?
 SQL;
 
-		$stmt = $pdo->prepare($sql);
-		$stmt->execute([$id, $id]);
+		try {
+            $pdo = $this->pdo();
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
-		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
-		if($result === false || $result['password'] === null || $result['password'] === '') {
-			return null;
-		}
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$id, $id]);
 
-		if(password_verify($password, $result['password'])) {
-			return new User($result);
-		}
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if($result === false || $result['password'] === null || $result['password'] === '') {
+                return null;
+            }
+
+            if(password_verify($password, $result['password'])) {
+                return new User($result);
+            }
+        } catch(TableException $e) {
+		    return null;
+        }
 
 		return null;
 	}
@@ -412,8 +424,8 @@ SQL;
 
 	/**
 	 * Generate a random string of characters to use as salt
-	 * @param $len Length to generate, default is 16
-	 * @returns Validator string
+	 * @param int $len Length to generate, default is 16
+	 * @return string Validator string
 	 */
 	public static function createSalt($len = 16) {
 		$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -424,5 +436,4 @@ SQL;
 		}
 		return $str;
 	}
-
 }

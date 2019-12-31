@@ -19,7 +19,8 @@
           <th>Level</th>
           <th>Message</th>
           <th>User</th>
-          <th>Other</th>
+          <th>Ids</th>
+          <th>Context</th>
         </tr>
         <tr v-for="result of results">
           <td class="small">{{time(result.time)}}</td>
@@ -27,7 +28,8 @@
           <td>{{levelName(result.level)}}</td>
           <td>{{result.message}}</td>
           <td>{{result.name}}</td>
-          <td class="small">{{other(result)}}</td>
+          <td>{{ids(result)}}</td>
+          <td class="small">{{result.context}}</td>
         </tr>
       </table>
       <p class="center" v-else><em>** empty **</em></p>
@@ -37,113 +39,115 @@
 </template>
 
 <script>
-	const ConsoleComponentBase = Site.ConsoleComponentBase;
+  const ConsoleComponentBase = Site.ConsoleComponentBase;
 
-	export default {
-	  extends: ConsoleComponentBase,
-    data: function() {
-	  	return {
-	  		results: [],
+  /**
+   * Vue component for viewing the system logs
+   *
+   * /cl/console/management/logs
+   *
+   * @constructor
+   */
+  export default {
+    extends: ConsoleComponentBase,
+    data: function () {
+      return {
+        results: [],
         more: false,
         levels: [],
-		    qLevel: 0,    // Query level
+        qLevel: 0,    // Query level
         qUser: '',    // Query user
         qMessage: ''  // Query message
       }
     },
-	  mounted() {
-		  this.$parent.setTitle(': Site Logs');
+    mounted() {
+      this.$parent.setTitle(': Site Logs');
 
-		  for(const level in this.$site.LogLevels) {
-		  	this.levels.push({
-           value: level,
-           name: this.$site.LogLevels[level]
+      for (const level in this.$site.LogLevels) {
+        this.levels.push({
+          value: level,
+          name: this.$site.LogLevels[level]
         });
       }
 
-      this.levels.sort(function(a, b) {
-      	return a.level - b.level;
+      this.levels.sort(function (a, b) {
+        return a.level - b.level;
       })
 
-		  this.fetch();
+      this.fetch();
 
 
-
-	  },
+    },
     methods: {
-	  	query() {
-	  		// Clear existing results
-	  		this.results = [];
-	  		this.fetch();
+      query() {
+        // Clear existing results
+        this.results = [];
+        this.fetch();
       },
-	  	fetch() {
-	  		const params = {};
+      fetch() {
+        const params = {};
 
-	  		if(this.results.length > 0) {
-	  			params.before = this.results[this.results.length-1].time;
+        if (this.results.length > 0) {
+          params.before = this.results[this.results.length - 1].time;
         }
 
-        if(+this.qLevel !== 0) {
-        	params.level = this.qLevel;
+        if (+this.qLevel !== 0) {
+          params.level = this.qLevel;
         }
 
-        if(this.qUser.trim() !== '') {
-        	params.name = this.qUser.trim();
+        if (this.qUser.trim() !== '') {
+          params.name = this.qUser.trim();
         }
 
-        if(this.qMessage.trim() !== '') {
-        	params.message = this.qMessage.trim();
+        if (this.qMessage.trim() !== '') {
+          params.message = this.qMessage.trim();
         }
 
         this.$site.api.get('/api/site/logs', params)
-          .then((response) => {
-            if (!response.hasError()) {
-              let data = response.getData('site-log');
-              if (data !== null) {
-                const results = data.attributes.results;
-                for(const result of results) {
-                	this.results.push(result);
-                }
+                .then((response) => {
+                  if (!response.hasError()) {
+                    let data = response.getData('site-log');
+                    if (data !== null) {
+                      const results = data.attributes.results;
+                      for (const result of results) {
+                        this.results.push(result);
+                      }
 
-                this.more = data.attributes.more;
-              }
+                      this.more = data.attributes.more;
+                    }
 
-            } else {
-              this.$site.toast(this, response);
-            }
+                  } else {
+                    this.$site.toast(this, response);
+                  }
 
-          })
-          .catch((error) => {
-            console.log(error);
-            this.$site.toast(this, error);
-          });
+                })
+                .catch((error) => {
+                  console.log(error);
+                  this.$site.toast(this, error);
+                });
       },
       getMore() {
-	  		this.fetch();
+        this.fetch();
       },
-	    time: function(value) {
-		    return this.$site.TimeFormatter.relativeUNIX(value);
-	    },
-      other: function(result) {
-	  		let str = '';
-	  		if(result.userid !== null) {
-	  			str += result.userid;
+      time: function (value) {
+        return this.$site.TimeFormatter.relativeUNIX(value);
+      },
+      ids: function (result) {
+        let str = '';
+        if (result.userid !== null) {
+          str += result.userid;
         }
 
-        if(result.memberid !== null) {
-        	str += '/' + result.userid;
-        }
-
-        if(result.jwtdata !== null) {
-        	str += '/' + result.jwtdata;
+        if (result.memberid !== null) {
+          str += '/' + result.userid;
         }
 
         return str;
       },
-      levelName: function(level) {
-	  		const levels = this.$site.LogLevels;
-	  		if(levels[level] !== undefined) {
-	  			return levels[level];
+      levelName: function (level) {
+        const levels = this.$site.LogLevels;
+        if (levels[level] !== undefined) {
+          return levels[level];
         }
 
         return 'UNDEFINED';
