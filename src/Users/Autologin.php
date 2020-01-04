@@ -86,7 +86,7 @@ SQL;
 		// Make the time the oldest time we will accept
 		$time -= $days * 86400;
 
-		$pdo = $this->pdo();
+		$pdo = $this->pdo;
 		$sql = <<<SQL
 select hash, userid, data
 from $this->tablename
