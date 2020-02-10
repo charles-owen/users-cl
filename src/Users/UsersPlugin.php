@@ -97,6 +97,7 @@ class UsersPlugin extends \CL\Site\Plugin  {
 
 			case 'user':
 				$this->user = $value;
+				$GLOBALS['user'] = $value;
 				break;
 
 			default:
