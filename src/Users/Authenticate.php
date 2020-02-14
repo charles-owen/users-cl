@@ -52,100 +52,100 @@ class Authenticate {
 			return $site->users->user;
 		}
 
-		//
-		// Cookie-based session support
-		//
-		$cookiename = $site->cookiePrefix . User::COOKIENAME;
-		if(!empty($server->cookie[$cookiename])) {
-			$cookie = $server->cookie[$cookiename];
-			try {
-				$decoded = JWT::decode($cookie, $site->users->publicKey, ["RS256"]);
-			} catch(\Exception $exception) {
-				/// JWT was not valid...
-				$decoded = null;
-			}
+        //
+        // Cookie-based session support
+        //
+        $cookiename = $site->cookiePrefix . User::COOKIENAME;
+        if(!empty($server->cookie[$cookiename])) {
+            $cookie = $server->cookie[$cookiename];
+            try {
+                $decoded = JWT::decode($cookie, $site->users->publicKey, ["RS256"]);
+            } catch(\Exception $exception) {
+                /// JWT was not valid...
+                $decoded = null;
+            }
 
-			$user = null;
-			if($decoded !== null) {
-				if($decoded->data->id > 0) {
-					$users = new Users($site->db);
-					$user = $users->get($decoded->data->id);
-					if($user !== null) {
-						$user->setFromJWT($decoded);
-					}
-				} else {
-					// A zero ID user is special since it is not
-					// in the database. This is normally only used
-					// during site startup. First, we see if this is
-					// a manually added user. If not we create a user.
-					$u = $site->users->getUser($decoded->data->user);
-					if($u !== null) {
-						if(!empty($u['name'])) {
-							$user = new User(['id'=>0,
-								'user'=>$u['user'],
-								'name'=>$u['name'],
-								'role'=>$u['role']]);
-						} else {
-							$user = new User(['id'=>0,
-								'user'=>$u['user'],
-								'name'=>'Guest',
-								'role'=>User::GUEST]);
-						}
-					} else {
-						$user = new User(['id'=>0,
-							'user'=>$decoded->data->user,
-							'name'=>'Guest',
-							'role'=>User::GUEST]);
-					}
+            $user = null;
+            if($decoded !== null) {
+                if($decoded->data->id > 0) {
+                    $users = new Users($site->db);
+                    $user = $users->get($decoded->data->id);
+                    if($user !== null) {
+                        $user->setFromJWT($decoded);
+                    }
+                } else {
+                    // A zero ID user is special since it is not
+                    // in the database. This is normally only used
+                    // during site startup. First, we see if this is
+                    // a manually added user. If not we create a user.
+                    $u = $site->users->getUser($decoded->data->user);
+                    if($u !== null) {
+                        if(!empty($u['name'])) {
+                            $user = new User(['id'=>0,
+                                'user'=>$u['user'],
+                                'name'=>$u['name'],
+                                'role'=>$u['role']]);
+                        } else {
+                            $user = new User(['id'=>0,
+                                'user'=>$u['user'],
+                                'name'=>'Guest',
+                                'role'=>User::GUEST]);
+                        }
+                    } else {
+                        $user = new User(['id'=>0,
+                            'user'=>$decoded->data->user,
+                            'name'=>'Guest',
+                            'role'=>User::GUEST]);
+                    }
 
-					$user->setFromJWT($decoded);
-				}
+                    $user->setFromJWT($decoded);
+                }
 
-				if($user !== null) {
-					// Renew JWT if older than the renewal period.
-					if(($time - $decoded->iat) > User::JWT_RENEWAL) {
-						$jwt = $user->createJWT($site, $time);
-						$server->setcookie($cookiename, $jwt, 0, "/");
-					}
+                if($user !== null) {
+                    // Renew JWT if older than the renewal period.
+                    if(($time - $decoded->iat) > User::JWT_RENEWAL) {
+                        $jwt = $user->createJWT($site, $time);
+                        $server->setcookie($cookiename, $jwt, 0, "/");
+                    }
 
-					return $user;
-				}
-			}
-		}
+                    return $user;
+                }
+            }
+        }
 
-		//
-		// Cookie-based automatic login support
-		//
-		$cookieALname = $site->cookiePrefix . Autologin::COOKIENAME;
-		if(!empty($server->cookie[$cookieALname])) {
-			// Attempt to validate
-			$cred = explode(":", $server->cookie[$cookieALname]);
-			$autologin = new Autologin($site->db);
-			$user = $autologin->validate($cred[0], $cred[1], $time);
+        //
+        // Cookie-based automatic login support
+        //
+        $cookieALname = $site->cookiePrefix . Autologin::COOKIENAME;
+        if(!empty($server->cookie[$cookieALname])) {
+            // Attempt to validate
+            $cred = explode(":", $server->cookie[$cookieALname]);
+            $autologin = new Autologin($site->db);
+            $user = $autologin->validate($cred[0], $cred[1], $time);
 
-			// We always delete the credentials
-			$autologin->delete($cred[0]);
+            // We always delete the credentials
+            $autologin->delete($cred[0]);
 
-			if($user === null) {
-				// Cookie is invalid, remove it
-				$server->deleteCookie($cookieALname);
-			} else {
-				// Cookie valid, create a new cookie for the next login
-				$cred = $autologin->create($user->id, $time, $user->dataJWT);
+            if($user === null) {
+                // Cookie is invalid, remove it
+                $server->deleteCookie($cookieALname);
+            } else {
+                // Cookie valid, create a new cookie for the next login
+                $cred = $autologin->create($user->id, $time, $user->dataJWT);
 
-				$server->setcookie($cookieALname,
-					$cred['id'] . ':' . $cred['token'],
-					$time + 86400 * Autologin::PERIOD, "/");
+                $server->setcookie($cookieALname,
+                    $cred['id'] . ':' . $cred['token'],
+                    $time + 86400 * Autologin::PERIOD, "/");
 
-				// And create a new cookie to represent that we are logged in
-				$jwt = $user->createJWT($site, $time);
-				$server->setcookie($cookiename, $jwt, 0, "/");
+                // And create a new cookie to represent that we are logged in
+                $jwt = $user->createJWT($site, $time);
+                $server->setcookie($cookiename, $jwt, 0, "/");
 
-				// Successful cookie-based login
-				return $user;
-			}
+                // Successful cookie-based login
+                return $user;
+            }
 
-		}
+        }
 
 		return null;
 	}

@@ -99,16 +99,20 @@ class AuthenticateLDAP extends Authenticate {
 			}
 		}
 
-		/*
-	 	* User Management, allows guest users
-	 	*/
-		$users = new Users($site->db);
-		$user = $users->getByUser($username);
-		if($user === null) {
-			$user = $users->createGuestUser($username);
-		}
+		try {
+            /*
+             * User Management, allows guest users
+             */
+            $users = new Users($site->db);
+            $user = $users->getByUser($username);
+            if($user === null) {
+                $user = $users->createGuestUser($username);
+            }
 
-		return $user;
+            return $user;
+        } catch(\CL\Tables\TableException $exception) {
+            throw new APIException("Site is unable to connect to database.", APIException::UNAVAILABLE);
+        }
 	}
 
 	private $url;

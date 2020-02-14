@@ -6,6 +6,7 @@
 
 namespace CL\Users;
 
+use CL\Site\Api\APIException;
 use CL\Site\Site;
 use CL\Site\System\Server;
 use CL\Users\Api\ApiUsers;
@@ -200,7 +201,13 @@ class UsersPlugin extends \CL\Site\Plugin  {
 	 * @return null|string redirect page.
 	 */
 	private function startup(Site $site, Server $server, $time) {
-		if($site->users->user !== null) {
+        // If this page has no defined user
+        if(isset($site->options['nouser']) && $site->options['nouser']) {
+            $site->users->user = null;
+            return null;
+        }
+
+        if($site->users->user !== null) {
 			// We have a logged-in user already
 			return null;
 		}
@@ -212,7 +219,14 @@ class UsersPlugin extends \CL\Site\Plugin  {
 
 		// Can we authenticate?
 		if($site->users->auth !== null) {
-			$site->users->user = $site->users->auth->authenticate($site, $server, $time);
+		    try {
+                $site->users->user = $site->users->auth->authenticate($site, $server, $time);
+            } catch(\CL\Tables\TableException $exception) {
+                $site->unavailable = 'Site is unable to connect to database.';
+		        if(!$server->apiURI()) {
+                    return $site->root . '/cl/unavailable';
+                }
+            }
 		}
 
 		if($site->users->user !== null) {
