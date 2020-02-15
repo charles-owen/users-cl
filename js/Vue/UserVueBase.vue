@@ -8,10 +8,8 @@ this.root
 -->
 
 <script>
-    import PageVueBase from 'site-cl/js/Vue/PageVueBase.vue';
-
     export default {
-        'extends': PageVueBase,
+        'extends': Site.Site.PageVueBase,
         computed: {
         	user() {
         		return  this.$store.state.user.user

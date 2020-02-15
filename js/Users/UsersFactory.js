@@ -8,6 +8,7 @@ import {StoreModuleUser} from './StoreModuleUser';
 import {StoreModuleUsers} from '../StoreModuleUsers';
 import {Permissions} from './Permissions';
 import AboutMeVue from '../AboutMe/AboutMe.vue';
+import UserVueBase from '../Vue/UserVueBase.vue';
 
 export const UsersFactory = function() {}
 
@@ -64,6 +65,7 @@ UsersFactory.create = function(site) {
 
     });
 
+    site.UserVueBase = UserVueBase;
     site.User = User;
     site.StoreModuleUsers = StoreModuleUsers;
 

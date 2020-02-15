@@ -110,14 +110,15 @@ SQL;
 		return null;
 	}
 
-	/**
-	 * Update the data component of an autologin record.
-	 *
-	 * This is used to add the dataJWT from User to the record.
-	 * @param int $id ID for the autologin record
-	 * @param array $data New data to set
-	 * @return bool true if successful
-	 */
+    /**
+     * Update the data component of an autologin record.
+     *
+     * This is used to add the dataJWT from User to the record.
+     * @param int $id ID for the autologin record
+     * @param array $data New data to set
+     * @return bool true if successful
+     * @throws \CL\Tables\TableException
+     */
 	public function updateData($id, $data) {
 		$pdo = $this->pdo();
 		$sql = <<<SQL
@@ -131,11 +132,12 @@ SQL;
 		return($stmt->execute($exec) !== false && $stmt->rowCount() > 0);
 	}
 
-	/**
-	 * Delete an autologin record by id
-	 * @param int $id ID to delete
-	 * @return bool true if successful
-	 */
+    /**
+     * Delete an autologin record by id
+     * @param int $id ID to delete
+     * @return bool true if successful
+     * @throws \CL\Tables\TableException
+     */
 	public function delete($id) {
 		$pdo = $this->pdo();
 		$sql = <<<SQL
