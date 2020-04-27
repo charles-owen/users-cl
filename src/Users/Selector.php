@@ -106,6 +106,35 @@ class Selector {
 		return $this->seed;
 	}
 
+	public function float() {
+        $h = hash("sha256", self::PADDING . $this->seed . $this->salt);
+        $h1 = hexdec(substr($h, 8, 7));
+        $this->seed = $h1 & 2147483647;
+        $d1 = $h1 / 268435456;
+
+        return $d1;
+    }
+
+    /**
+     * Choose one item from some array.
+     * @param array $items Items to choose from
+     * @return mixed Item from array
+     */
+    public function choose($items) {
+	    return $items[$this->get_rand() % count($items)];
+    }
+
+    /**
+     * Determine a random number in a specified range.
+     * @param $min
+     * @param $max
+     * @return float
+     */
+    public function rand($min, $max) {
+        $f = $this->float();
+        return floor($min + ($max - $min + 1) * $f);
+    }
+
 	/**
 	 * Compute selector as a float value for a user.
 	 * @param mixed $user User object or string containing user (or team) ID
