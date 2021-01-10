@@ -28,38 +28,6 @@ class LoginView extends \CL\Site\View {
 
 		$this->title = "Login";
 		$this->addJS('login');
-		$this->addCLS('cl-login', json_encode(['before'=>$this->before, 'after'=>$this->after]));
+        $this->addCLS('cl-login', json_encode(['before'=>$this->__get('before'), 'after'=>$this->__get('after')]));
 	}
-
-	/**
-	 * Property set magic method
-	 *
-	 * <b>Properties</b>
-	 * Property | Type | Description
-	 * -------- | ---- | -----------
-	 * after | string | HTML to add after the login form
-	 * before | string | HTML to add before the login form
-	 *
-	 * Plus properties inherited from CL::Site::View
-	 *
-	 * @param string $property Property name
-	 * @param mixed $value Value to set
-	 */
-	public function __set($property, $value) {
-		switch($property) {
-			case 'before':
-				$this->before = $value;
-				break;
-
-			case 'after':
-				$this->after = $value;
-				break;
-
-			default:
-				parent::__set($property, $value);
-		}
-	}
-
-	private $before = '';
-	private $after = '';
 }
