@@ -238,7 +238,7 @@ class Authenticate {
 	protected function getUserId($post) {
 		$username = trim(strip_tags($post['id']));
 
-		if(!empty($this->config['email-strip']) && $this->config['email-strip']) {
+		if(!empty($this->options['email-strip']) && $this->options['email-strip']) {
 			if(strpos($username, '@') !== false) {
 				$username = trim(substr($username, 0, strpos($username, '@')));
 			}
