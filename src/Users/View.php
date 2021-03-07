@@ -29,6 +29,8 @@ class View extends \CL\Site\View {
 		$this->user = $site->users->user;
 
 		// Some globals that make page creation easier
+        // This should not be needed in the future, since
+        // it is now being done by the user plugin on startup.
 		$GLOBALS['user'] = $this->user;
 
 		$this->addJS('users');

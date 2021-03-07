@@ -207,6 +207,8 @@ class UsersPlugin extends \CL\Site\Plugin  {
             return null;
         }
 
+        // This global variable makes page creation easier
+        $GLOBALS['user'] = $site->users->user;
         if($site->users->user !== null) {
 			// We have a logged-in user already
 			return null;
@@ -229,10 +231,13 @@ class UsersPlugin extends \CL\Site\Plugin  {
             }
 		}
 
+        $GLOBALS['user'] = $site->users->user;
 		if($site->users->user !== null) {
 			// We have a logged-in user already
 			return null;
 		}
+
+        $GLOBALS['user'] = null;
 
 		// If this is an open page, we allow no active user
 		if(isset($site->options['open']) && $site->options['open']) {
