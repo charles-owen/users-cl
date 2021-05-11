@@ -56,7 +56,7 @@
             return {
                 cancel: Site.root + '/cl/console/management/users',
                 legend: this.id === 'new' ? 'New User' : 'Edit User',
-                roles: Users.User.getUserRoles(),
+                roles: Site.User.getUserRoles(),
 
                 user: null,
                 userId: '',
@@ -87,7 +87,7 @@
             take() {
                 if(this.id === 'new') {
                     this.$parent.setTitle(': Add User');
-                    this.role = Users.User.USER;
+                    this.role = Site.User.USER;
                     this.$nextTick(() => {
                         this.$refs.userid.select();
                     });

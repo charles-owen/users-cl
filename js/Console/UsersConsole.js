@@ -18,7 +18,7 @@ export let UsersConsole = function(site) {
     });
 
     Console.components.addOption({
-        atLeast: Users.User.STAFF,
+        atLeast: Site.User.STAFF,
         page: {title: 'Main', route: '', order: 1},
         section: {title: 'Site', order: 1},
         title: 'Users',
@@ -31,7 +31,7 @@ export let UsersConsole = function(site) {
 
 
     Console.components.addOption({
-        atLeast: Users.User.ADMIN,
+        atLeast: Site.User.ADMIN,
         page: {title: 'Management', route: '/management', order: 10},
         section: {title: 'Site Management', order: 1},
         title: 'Users',

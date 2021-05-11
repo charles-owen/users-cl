@@ -85,7 +85,7 @@
             }
         },
         computed: mapState({
-            users: state => state.users.users,
+            users: state => state.Site.Users,
             fetcher: state => state.users.fetcher
 
         }),

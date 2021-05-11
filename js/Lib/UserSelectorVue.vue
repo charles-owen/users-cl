@@ -93,7 +93,7 @@
                                 this.more = false;
                                 data.attributes.forEach((userData) => {
                                     if(userData.more !== 'yes') {
-                                        let user = new Users.User(userData);
+                                        let user = new Site.User(userData);
                                         this.result.push(user);
                                     } else {
                                         this.more = true;

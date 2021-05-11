@@ -16,9 +16,12 @@ export {UserSelectorVue};
 export {User};
 
 let Users = UsersFactory.create(Site.site);
-export {Users};
+//export {Users};
+
+global.Users = Users;
 
 Site.FetcherVue = FetcherVue;
+Site.Users = Users;
 Site.User = User;
 Site.UserVueBase = UserVueBase;
 Site.UserSelectorVue = UserSelectorVue;

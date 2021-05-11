@@ -96,7 +96,7 @@
           	      this.mask = false;
                   if (!response.hasError()) {
                   	this.prefData = response.getData('preferences-data').attributes;
-                  	const user = new Users.User(response.getData('user').attributes);
+                  	const user = new Site.User(response.getData('user').attributes);
 	                  this.$store.commit('user/set', user);
                     this.editing = false;
                   } else {

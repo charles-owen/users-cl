@@ -157,7 +157,7 @@ StoreModuleUsers.create = function(api, toId) {
                                     if(userObj.more === 'yes') {
                                         more = true;
                                     } else {
-                                        commit('add', new Users.User(userObj));
+                                        commit('add', new Site.User(userObj));
                                     }
                                 })
 
@@ -213,16 +213,16 @@ StoreModuleUsers.create = function(api, toId) {
                                         reject('User does not exist')
                                     } else {
                                         commit('fetchDone', true);
-                                        let user = new Users.User(data.attributes[0]);
+                                        let user = new Site.User(data.attributes[0]);
 
                                         const prev = response.getData('prev-user');
                                         if(prev !== null) {
-                                            user.prev = new Users.User(prev.attributes);
+                                            user.prev = new Site.User(prev.attributes);
                                         }
 
                                         const next = response.getData('next-user');
                                         if(next !== null) {
-                                            user.next = new Users.User(next.attributes);
+                                            user.next = new Site.User(next.attributes);
                                         }
 
                                         resolve(user);
@@ -248,7 +248,7 @@ StoreModuleUsers.create = function(api, toId) {
                         .then((response) => {
                             if(!response.hasError()) {
                                 let data = response.getData('updated-user');
-                                let user = new Users.User(data.attributes);
+                                let user = new Site.User(data.attributes);
 
                                 // Update user if we have it stored locally
                                 // and the name has not changed
@@ -271,7 +271,7 @@ StoreModuleUsers.create = function(api, toId) {
                         .then((response) => {
                             if(!response.hasError()) {
                                 let data = response.getData('new-user');
-                                let user = new Users.User(data.attributes);
+                                let user = new Site.User(data.attributes);
 
                                 commit('new', user);
                                 resolve(user);
