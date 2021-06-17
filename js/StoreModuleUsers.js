@@ -16,7 +16,7 @@ export let StoreModuleUsers = function() {
  *
  * This will work for both Users and course Members, since they
  * use the same API.
- * @param api '/api/users' for '/api/course/members'
+ * @param api '/api/users' or '/api/course/members'
  * @param query Items to add to the query (semester and section for members).
  * @param toId Mapping from a user to the ID to use for the collection.
  * @returns {*}

@@ -1,7 +1,6 @@
 <template>
   <div class="content cl-users-editor">
     <div class="full">
-
       <div v-if="fetcher.fetched">
         <table v-if="users.length > 0" class="small">
           <tr>
@@ -44,9 +43,11 @@
     import FetcherVue from '../Lib/FetcherVue.vue';
 
     const mapState = Site.Vuex.mapState;
+    const ConsoleComponentBase = Site.ConsoleComponentBase;
 
     export default {
-        props: [
+      'extends': ConsoleComponentBase,
+      props: [
             'management'
         ],
         data: function() {
@@ -85,15 +86,15 @@
             }
         },
         computed: mapState({
-            users: state => state.Site.Users,
+          users: state => state.users.users,
+         // users: state => state.Site.Users,
             fetcher: state => state.users.fetcher
-
         }),
         mounted() {
           this.$parent.setTitle(': Users');
           this.$store.dispatch('users/fetch');
 
-	        // Add the 'Add Member' option to the the nav2 navigation bar
+	        // Add the 'Add User' option to the the nav2 navigation bar
 	        if(this.management) {
 		        this.addComponent = this.$site.console.components.addNav2Link(this, 'Add User', 5, () => {
 			        this.$router.push(Site.root + '/cl/console/management/user/new');

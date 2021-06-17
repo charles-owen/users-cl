@@ -9,94 +9,94 @@
 </template>
 
 <script>
-  /**
-   * @file
-   * Fetcher component displays "Fetching" and a "more" button.
-   */
+/**
+ * @file
+ * Fetcher component displays "Fetching" and a "more" button.
+ */
 
-  /**
-   * Fetcher function used to update this object.
-   * @constructor
-   */
-  export let Fetcher = function() {
-      this.more = false;       // Indicates there is more to fetch
-      this.fetching = false;  // Set true while we are fetching
-      this.fetched = false;   // Set true when we have fetched something...
+/**
+ * Fetcher function used to update this object.
+ * @constructor
+ */
+export let Fetcher = function () {
+  this.more = false;       // Indicates there is more to fetch
+  this.fetching = false;  // Set true while we are fetching
+  this.fetched = false;   // Set true when we have fetched something...
 
-      this.start = function(single) {
-          this.fetching = true;
+  this.start = function (single) {
+    this.fetching = true;
 
-          if(single !== true) {
-              this.more = false;
-          }
+    if (single !== true) {
+      this.more = false;
+    }
+  }
+
+  this.done = function (single) {
+    this.fetching = false;
+
+    if (single !== true) {
+      this.fetched = true;
+    }
+  }
+
+  this.reset = function () {
+    this.more = false;
+    this.fetching = false;
+    this.fetched = false;
+  }
+};
+
+
+export default {
+  props: {
+    fetcher: {
+      type: Object,
+      'default': null
+    },
+    fetching: {
+      type: Boolean,
+      default: false
+    }
+  },
+  watch: {
+    'fetcher.fetching': function (to, from) {
+      this.setFetching()
+    },
+    fetching: function (to, from) {
+      this.setFetching()
+    }
+  },
+  data: function () {
+    return {
+      showFetching: false,
+      delayedFetching: false,
+      timer: null
+    }
+  },
+  mounted() {
+    this.setFetching();
+  },
+  methods: {
+    fetchMore() {
+      this.$parent.fetchMore();
+    },
+    setFetching() {
+      // Are we currently fetching?
+      let showFetching = (this.fetcher !== null && this.fetcher.fetching) || this.fetching;
+      if (showFetching && !this.showFetching) {
+        // Fetching is becoming active
+        this.timer = setTimeout(() => {
+          this.delayedFetching = true;
+        }, 1000)
+      } else if (!showFetching && this.showFetching) {
+        clearTimeout(this.timer);
+        this.time = null;
+        this.delayedFetching = false;
       }
-
-      this.done = function(single) {
-          this.fetching = false;
-
-          if(single !== true) {
-              this.fetched = true;
-          }
-      }
-
-      this.reset = function() {
-          this.more = false;
-          this.fetching = false;
-          this.fetched = false;
-      }
-  };
-
-
-  export default {
-      props: {
-        fetcher: {
-            type: Object,
-            'default': null
-        },
-        fetching: {
-            type: Boolean,
-            default: false
-        }
-      },
-      watch: {
-          'fetcher.fetching': function(to, from) {
-              this.setFetching()
-          },
-          fetching: function(to, from) {
-              this.setFetching()
-          }
-      },
-      data: function() {
-          return {
-              showFetching: false,
-              delayedFetching: false,
-              timer: null
-          }
-      },
-      mounted() {
-          this.setFetching();
-      },
-      methods: {
-          fetchMore() {
-              this.$parent.fetchMore();
-          },
-          setFetching() {
-              // Are we currently fetching?
-              let showFetching = (this.fetcher !== null && this.fetcher.fetching) || this.fetching;
-              if(showFetching && !this.showFetching) {
-                  // Fetching is becoming active
-                  this.timer = setTimeout(() => {
-                      this.delayedFetching = true;
-                  }, 1000)
-              } else if(!showFetching && this.showFetching) {
-                  clearTimeout(this.timer);
-                  this.time = null;
-                  this.delayedFetching = false;
-              }
-              this.showFetching = showFetching;
-          }
-      }
-  };
+      this.showFetching = showFetching;
+    }
+  }
+};
 
 </script>
 
