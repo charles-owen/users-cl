@@ -1,0 +1,5 @@
+{
+  "Users.js": "/cl/dist/users.dev.js",
+  "UsersConsole.js": "/cl/dist/usersconsole.dev.js",
+  "Login.js": "/cl/dist/login.dev.js"
+}

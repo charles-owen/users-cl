@@ -1,5 +1,4 @@
 import LoginVue from './Login.vue';
-
 let Login = function() {
 
 }
