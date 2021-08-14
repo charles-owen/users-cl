@@ -36,7 +36,7 @@ class AuthenticateLDAP extends Authenticate {
 	 * @param string $url URL for the LDAP server
 	 * @param string $basedn Base domain name indication.
 	 */
-	public function __construct($options = [], $url, $basedn) {
+	public function __construct(array $options, $url, $basedn) {
 		parent::__construct($options);
 
 		$this->url = $url;
