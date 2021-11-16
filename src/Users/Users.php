@@ -140,7 +140,7 @@ SQL;
 		}
 
 		try {
-            // echo $where->sub_sql($sql);
+            // echo "\n" . $where->sub_sql($sql);
             $result = $where->execute($sql);
             $users = [];
             foreach($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {

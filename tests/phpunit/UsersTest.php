@@ -11,29 +11,17 @@ use CL\Users\User;
 use CL\Users\Users;
 
 class UsersTest extends UsersDatabaseTestBase {
-	/**
-	 * @return PHPUnit_Extensions_Database_DataSet_IDataSet
-	 */
 	public function getDataSet() {
 		return $this->dataSets(['user-many.xml']);
 	}
 
-	public function ensureTables() {
-		$this->ensureTable(new Users($this->site->db));
-	}
+    protected function setUp() : void {
+        $this->ensureTable(new Users($this->site->db));
+    }
 
 	public function test_add_get() {
 		$users = new Users($this->site->db);
 		$time = time();
-
-		//
-		// Empty table before this test
-		//
-		$sql = <<<SQL
-delete from $users->tablename
-SQL;
-
-		$users->pdo->query($sql);
 
 		$user = new User();
 		$user->name = 'Phibes, Anton';
@@ -65,6 +53,8 @@ SQL;
 	}
 
 	public function test_search() {
+        $this->dataSets(['db/user-many.xml']);
+
 		$users = new Users($this->site->db);
 
 		$results = $users->query(['search'=>'owen']);
@@ -78,7 +68,9 @@ SQL;
 	}
 
 	public function test_delete() {
-		$users = new Users($this->site->db);
+        $this->dataSets(['db/user-many.xml']);
+
+        $users = new Users($this->site->db);
 		$time = time();
 
 		$user = new User();
@@ -99,6 +91,8 @@ SQL;
 
 
 	public function test_validate_password() {
+        $this->dataSets(['db/user-many.xml']);
+
 		$users = new Users($this->site->db);
 		$time = time();
 
@@ -131,7 +125,9 @@ SQL;
 	}
 
 	public function test_metaData() {
-		$users = new Users($this->site->db);
+        $this->dataSets(['db/user-many.xml']);
+
+        $users = new Users($this->site->db);
 		$user1 = $users->get(5);
 
 		// Initially temp
@@ -146,7 +142,9 @@ SQL;
 	}
 
 	public function test_query() {
-		$users = new Users($this->site->db);
+        $this->dataSets(['db/user-many.xml']);
+
+        $users = new Users($this->site->db);
 		$user33 = $users->query(['id'=>33])[0];
 		$this->assertEquals(33, $user33->id);
 
