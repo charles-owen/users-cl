@@ -1,7 +1,7 @@
 <template>
   <span>
     <div class="cl-input"><input v-model="query" type="text" maxlength="150">
-      <a @click.prevent="fetch(query)" class="searcher"><img :src="searcher"></a>
+      <a @click.prevent="fetch(query)" class="searcher"><img :src="root + '/cl/img/search.png'"></a>
       <div v-if="result.length > 0 || noresult" class="cl-results">
         <div class="cl-result-list">
           <div v-for="user in result" @click.prevent="selectUser(user)"><span><a
@@ -13,124 +13,126 @@
         <div v-if="more" class="statement">...more...</div>
 
       </div>
-    </div> <a @click.prevent="clear"><img :src="deleter"></a>
+    </div> <a @click.prevent="clear"><img :src="root + '/cl/img/x.png'"></a>
   </span>
 </template>
 
 <script>
 
-  const LIMIT = 20;
+const LIMIT = 20;
 
-  /**
-   * Simple component for selecting a user in the system.
-   * @constructor UserSelectorVue
-   */
-    export default {
-        props: [
-            'selected'
-        ],
-        data: function() {
-            return {
-                query: '',
-                result: [],
-                noresult: false,
-                seq: 1,
-                fetched: false,
-                timer: null,
-                set: false,
-                more: false,
-                searcher: Site.root + '/vendor/cl/site/img/search.png',
-                deleter: Site.root + '/vendor/cl/site/img/x.png',
-            }
-        },
-        watch: {
-            query(after, before) {
-                if(this.set) {
-                    this.set = false;
-                    return;
-                }
-
-                if(this.timer !== null) {
-                    clearTimeout(this.timer);
-                    this.timer = null;
-                };
-
-                this.timer = setTimeout(() => {
-                    this.fetch(after);
-                }, 300);
-            }
-        },
-        methods: {
-            fetch(query) {
-                if(this.timer !== null) {
-                    clearTimeout(this.timer);
-                    this.timer = null;
-                };
-
-                this.selected(null);
-
-                query = query.trim();
-                if(query.length < 2) {
-                    this.fetched = false;
-                    this.result = [];
-                    return;
-                }
-
-                this.seq++;
-                Site.api.get('/api/users', {search: query, seq: this.seq, limit: LIMIT})
-                    .then((response) => {
-                        if(!response.hasError()) {
-                            // This protects from out-of-order processing
-                            // of results from the server...
-                            const seq = response.getData('seq');
-                            if(+seq.id !== this.seq) {
-                                return;
-                            }
-
-                            const data = response.getData('users');
-                            if(data !== null) {
-                                this.result = [];
-                                this.more = false;
-                                data.attributes.forEach((userData) => {
-                                    if(userData.more !== 'yes') {
-                                        let user = new Site.User(userData);
-                                        this.result.push(user);
-                                    } else {
-                                        this.more = true;
-                                    }
-                                })
-
-                                this.noresult = (this.result.length === 0);
-                            }
-
-                        } else {
-                            Site.toast(this, response);
-                        }
-
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        Site.toast(this, error);
-                    });
-            },
-            selectUser(user) {;
-                this.query = user.name;
-                this.set = true;
-                this.result = [];
-                this.noresult = false;
-                this.more = false;
-                this.selected(user);
-            },
-            clear() {
-                this.seq++; // Just in case
-                this.result = [];
-                this.noresult = false;
-                this.more = false;
-                this.query = '';
-                this.selected(null);
-            }
-        }
+/**
+ * Simple component for selecting a user in the system.
+ * @constructor UserSelectorVue
+ */
+export default {
+  props: [
+    'selected'
+  ],
+  data: function () {
+    return {
+      query: '',
+      result: [],
+      noresult: false,
+      seq: 1,
+      fetched: false,
+      timer: null,
+      set: false,
+      more: false,
+      root: Site.root
     }
+  },
+  watch: {
+    query(after, before) {
+      if (this.set) {
+        this.set = false;
+        return;
+      }
+
+      if (this.timer !== null) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      ;
+
+      this.timer = setTimeout(() => {
+        this.fetch(after);
+      }, 300);
+    }
+  },
+  methods: {
+    fetch(query) {
+      if (this.timer !== null) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      ;
+
+      this.selected(null);
+
+      query = query.trim();
+      if (query.length < 2) {
+        this.fetched = false;
+        this.result = [];
+        return;
+      }
+
+      this.seq++;
+      Site.api.get('/api/users', {search: query, seq: this.seq, limit: LIMIT})
+          .then((response) => {
+            if (!response.hasError()) {
+              // This protects from out-of-order processing
+              // of results from the server...
+              const seq = response.getData('seq');
+              if (+seq.id !== this.seq) {
+                return;
+              }
+
+              const data = response.getData('users');
+              if (data !== null) {
+                this.result = [];
+                this.more = false;
+                data.attributes.forEach((userData) => {
+                  if (userData.more !== 'yes') {
+                    let user = new Site.User(userData);
+                    this.result.push(user);
+                  } else {
+                    this.more = true;
+                  }
+                })
+
+                this.noresult = (this.result.length === 0);
+              }
+
+            } else {
+              Site.toast(this, response);
+            }
+
+          })
+          .catch((error) => {
+            console.log(error);
+            Site.toast(this, error);
+          });
+    },
+    selectUser(user) {
+      ;
+      this.query = user.name;
+      this.set = true;
+      this.result = [];
+      this.noresult = false;
+      this.more = false;
+      this.selected(user);
+    },
+    clear() {
+      this.seq++; // Just in case
+      this.result = [];
+      this.noresult = false;
+      this.more = false;
+      this.query = '';
+      this.selected(null);
+    }
+  }
+}
 
 </script>
 
