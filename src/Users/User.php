@@ -189,36 +189,10 @@ class User implements MetaDataOwner {
 				return $this->userId;
 
             default:
-                $trace = debug_backtrace();
-                trigger_error(
-                    'Undefined property ' . $property .
-                    ' in ' . $trace[0]['file'] .
-                    ' on line ' . $trace[0]['line'],
-                    E_USER_NOTICE);
-                return null;
+                return \CL\Site\PropertyHelper::Error($property);
         }
     }
 
-	/**
-	 * Get the effective user role. This will be the membership role if
-	 * the user has a membership attached.
-	 *
-	 * @return string Role
-	 */
-    public function role() {
-    	//
-	    // An admin user is automatically admin in all cases
-	    //
-	    if($this->role === self::ADMIN) {
-	    	return self::ADMIN;
-	    }
-
-	    if($this->member !== null) {
-		    return $this->member->role;
-	    }
-
-	    return $this->role;
-    }
 
     /**
      * Property set magic method
@@ -268,15 +242,32 @@ class User implements MetaDataOwner {
 	        	break;
 
             default:
-                $trace = debug_backtrace();
-                trigger_error(
-                    'Undefined property ' . $property .
-                    ' in ' . $trace[0]['file'] .
-                    ' on line ' . $trace[0]['line'],
-                    E_USER_NOTICE);
+                \CL\Site\PropertyHelper::Error($property);
                 break;
         }
 
+    }
+
+
+    /**
+     * Get the effective user role. This will be the membership role if
+     * the user has a membership attached.
+     *
+     * @return string Role
+     */
+    public function role() {
+        //
+        // An admin user is automatically admin in all cases
+        //
+        if($this->role === self::ADMIN) {
+            return self::ADMIN;
+        }
+
+        if($this->member !== null) {
+            return $this->member->role;
+        }
+
+        return $this->role;
     }
 
 	/**

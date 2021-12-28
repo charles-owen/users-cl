@@ -11,10 +11,6 @@ use CL\Users\User;
 use CL\Users\Users;
 
 class UsersTest extends UsersDatabaseTestBase {
-	public function getDataSet() {
-		return $this->dataSets(['user-many.xml']);
-	}
-
     protected function setUp() : void {
         $this->ensureTable(new Users($this->site->db));
     }

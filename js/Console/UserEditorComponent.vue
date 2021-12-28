@@ -20,7 +20,7 @@
               <label class="form_text">Email<br>
                 <input ref="email" type="email" v-model="email" maxlength="254"></label>
             </p>
-            <div class="radio-set">
+            <div class="cl-radio-set">
               <div class="label"><em>Role:</em></div>
               <div class="options">
                 <label v-for="(roleObj, id) in roles">
