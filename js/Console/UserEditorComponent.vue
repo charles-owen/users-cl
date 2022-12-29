@@ -29,10 +29,10 @@
             </div>
             <p>
               <label>Password<br>
-                <input ref="password1" type="password" v-model="password1" class="medium" value=""></label></p>
+                <input ref="password1" type="password" v-model="password1" class="medium"></label></p>
             <p>
               <label class="form_text">Again<br>
-                <input type="password" v-model="password2" class="medium" value=""></label></p>
+                <input type="password" v-model="password2" class="medium"></label></p>
             <p class="center">
               <button>Submit</button>
               <router-link :to="cancel" tag="button">Cancel</router-link>

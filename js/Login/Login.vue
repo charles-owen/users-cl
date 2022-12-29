@@ -4,7 +4,7 @@
     <form class="left" id="login" @submit.prevent="submit" method="post">
       <fieldset>
         <p><label for="userid">User ID</label><br>
-          <input type="text" v-model="credentials.id" id="userid"></p>
+          <input type="text" v-model="credentials.id" name="userid" id="userid"></p>
         <p><label for="password">Password</label><br>
           <input type="password" v-model="credentials.password" id="password"></p>
         <p><input id="keep" type="checkbox" v-model="credentials.keep"> <label for="keep">Keep me logged in</label></p>
@@ -18,54 +18,54 @@
 </template>
 
 <script>
-    let router = new Site.Site.VueRouter({
-        mode: 'history',
-        routes: []
-    });
 
-    module.exports = {
-        router,
-        data: function() {
-            return {
-                credentials: {
-                    id: '',
-                    password: '',
-                    keep: false
-                },
-                msg: ''
-            }
-        },
-        props: ['json'],
-        created: function() {
-            this.$site.api.post('/api/users/logout', {})
-                .then((response) => {
-                })
-                .catch((error) => {
-                });
-        },
-        mounted: function() {
-            this.redirect = this.$route.query.u;
-            if(this.redirect === undefined || this.redirect === null) {
-                this.redirect = this.$site.root + '/';
-            }
-        },
-        methods: {
-            submit() {
-                this.$site.api.post('/api/users/login', this.credentials)
-                    .then((response) => {
-                      if(response.hasError()) {
-	                      this.$site.toast(this, response);
-                      } else {
-                          window.location = this.redirect;
-                      }
-
-                    })
-                    .catch((error) => {
-	                    this.$site.toast(this, error);
-                    });
-            }
-        }
+export default {
+  data() {
+    return {
+      credentials: {
+        id: '',
+        password: '',
+        keep: false
+      },
+      msg: ''
     }
+  },
+  props: ['json'],
+  created: function () {
+    this.$site.api.post('/api/users/logout', {})
+        .then((response) => {
+        })
+        .catch((error) => {
+        });
+  },
+  mounted: function () {
+    this.redirect = this.$route.query
+    if (this.redirect === undefined || this.redirect === null) {
+      this.redirect = this.$site.root + '/'
+    }
+  },
+  computed: {
+    route() {
+      return this.$route
+    }
+  },
+  methods: {
+    submit() {
+      this.$site.api.post('/api/users/login', this.credentials)
+          .then((response) => {
+            if (response.hasError()) {
+              this.$site.toast(this, response);
+            } else {
+              window.location = this.redirect;
+            }
+
+          })
+          .catch((error) => {
+            this.$site.toast(this, error);
+          });
+    }
+  }
+}
 </script>
 
 <style lang="scss">
