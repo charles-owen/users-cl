@@ -61,7 +61,7 @@
       }
     },
     mounted() {
-      this.$parent.setTitle(': Site Logs');
+      this.$root.setTitle(': Site Logs');
 
       for (const level in this.$site.LogLevels) {
         this.levels.push({

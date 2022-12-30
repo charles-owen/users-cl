@@ -5,4 +5,6 @@
 
 import {UsersConsole} from './UsersConsole';
 
-new UsersConsole(Site.Site);
+if(!Site.UsersConsole) {
+    Site.UsersConsole = new UsersConsole(Site);
+}

@@ -10,7 +10,6 @@
   "author": "Charles B. Owen",
   "license": "MIT",
   "dependencies": {
-    "@vue/compat": "^3.2.45",
     "dialog-cl": "^1.0.7",
     "site-cl": ">=0.0.1",
     "vue": "^3.2.45",

@@ -30,7 +30,13 @@ export default {
       msg: ''
     }
   },
-  props: ['json'],
+  props: {
+    json: {
+      type: Object,
+      default: (() => {
+      })
+    }
+  },
   created: function () {
     this.$site.api.post('/api/users/logout', {})
         .then((response) => {
@@ -39,7 +45,7 @@ export default {
         });
   },
   mounted: function () {
-    this.redirect = this.$route.query
+    this.redirect = this.$route.query.u
     if (this.redirect === undefined || this.redirect === null) {
       this.redirect = this.$site.root + '/'
     }

@@ -91,7 +91,7 @@
             fetcher: state => state.users.fetcher
         }),
         mounted() {
-          this.$parent.setTitle(': Users');
+          this.$root.setTitle(': Users');
           this.$store.dispatch('users/fetch');
 
 	        // Add the 'Add User' option to the the nav2 navigation bar
@@ -101,7 +101,7 @@
 		        });
 	        }
         },
-        beforeDestroy() {
+      beforeUnmount() {
           this.$site.console.components.removeNav2(this, this.addComponent);
         },
         components: {

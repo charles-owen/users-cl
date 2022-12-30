@@ -86,20 +86,20 @@
         methods: {
             take() {
                 if(this.id === 'new') {
-                    this.$parent.setTitle(': Add User');
+                    this.$root.setTitle(': Add User');
                     this.role = Site.User.USER;
                     this.$nextTick(() => {
                         this.$refs.userid.select();
                     });
                     this.user = null;
                 } else {
-                    this.$parent.setTitle(': User');
+                    this.$root.setTitle(': User');
                     this.$store.dispatch('users/get', {id: this.id})
                         .then((user) => {
                             this.user = user;
                             this.userId = user.userId;
                             this.name = user.name;
-                            this.$parent.setTitle(': User ' + user.name);
+                            this.$root.setTitle(': User ' + user.name);
                             this.email = user.email;
                             this.role = user.userRole();
                             this.$nextTick(() => {

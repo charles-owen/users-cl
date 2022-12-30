@@ -15,13 +15,15 @@ export {FetcherVue};
 export {UserSelectorVue};
 export {User};
 
-let Users = UsersFactory.create(Site.site);
-//export {Users};
+if(!Site.Users) {
+    let Users = UsersFactory.create(Site.site);
 
-global.Users = Users;
+    //global.Users = Users;
 
-Site.FetcherVue = FetcherVue;
-Site.Users = Users;
-Site.User = User;
-Site.UserVueBase = UserVueBase;
-Site.UserSelectorVue = UserSelectorVue;
+    Site.FetcherVue = FetcherVue;
+    Site.Users = Users;
+    Site.User = User;
+    Site.UserVueBase = UserVueBase;
+    Site.UserSelectorVue = UserSelectorVue;
+}
+
