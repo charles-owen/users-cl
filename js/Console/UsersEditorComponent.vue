@@ -96,13 +96,13 @@
 
 	        // Add the 'Add User' option to the the nav2 navigation bar
 	        if(this.management) {
-		        this.addComponent = this.$site.console.components.addNav2Link(this, 'Add User', 5, () => {
+		        this.addComponent = this.$root.console.components.addNav2Link(this, 'Add User', 5, () => {
 			        this.$router.push(Site.root + '/cl/console/management/user/new');
 		        });
 	        }
         },
       beforeUnmount() {
-          this.$site.console.components.removeNav2(this, this.addComponent);
+          this.$root.console.components.removeNav2(this, this.addComponent);
         },
         components: {
             'fetcher': FetcherVue
