@@ -100,6 +100,10 @@ SQL;
 		}
 
 		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!is_null($row) || !isset($row['hash'])) {
+            return null;
+        }
+
 		if(password_verify($token, $row['hash'])) {
 			$users = new Users($this->config);
 			$user = $users->get($row['userid']);
