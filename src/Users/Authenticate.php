@@ -7,6 +7,7 @@
 namespace CL\Users;
 
 use \Firebase\JWT\JWT;
+use \Firebase\JWT\Key;
 
 use \CL\Site\Site;
 use \CL\Site\System\Server;
@@ -59,7 +60,8 @@ class Authenticate {
         if(!empty($server->cookie[$cookiename])) {
             $cookie = $server->cookie[$cookiename];
             try {
-                $decoded = JWT::decode($cookie, $site->users->publicKey, ["RS256"]);
+                // $decoded = JWT::decode($cookie, $site->users->publicKey, ["RS256"]);
+                $decoded = JWT::decode($cookie, new Key($site->users->publicKey, "RS256"));
             } catch(\Exception $exception) {
                 /// JWT was not valid...
                 $decoded = null;
